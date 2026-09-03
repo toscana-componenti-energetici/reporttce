@@ -870,15 +870,6 @@ select:focus{
             Cronologia
           </button>
 
-          <button
-            id="pdfbtn"
-            type="button"
-            class="btn light"
-            onclick="exportPDF()"
-            aria-label="Esporta report in PDF"
-          >
-            Esporta PDF
-          </button>
 
           <button
             id="savebtn"
@@ -1346,10 +1337,6 @@ function showHistory(id) {
 
 function closeHistory() {
   document.getElementById('modal').classList.remove('open');
-}
-
-function exportPDF() {
-  alert('Funzione di esportazione PDF in sviluppo');
 }
 
 function showSearchAlert(msg, type) {
