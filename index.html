@@ -579,18 +579,16 @@ select:focus{
         <div class="field">
 
           <label>
-            Installatore *
+            Installatore (seleziona uno o più) *
           </label>
 
           <select
             id="installatore"
             required
             onchange="installerChange()"
+            multiple
+            size="4"
           >
-
-            <option value="">
-              Seleziona...
-            </option>
 
             <option>Fagio</option>
             <option>Brugno</option>
@@ -612,11 +610,12 @@ select:focus{
         >
 
           <label>
-            Specificare installatore
+            Specificare installatore (Altro)
           </label>
 
           <input
             id="installatoreAltro"
+            placeholder="Nome installatore alternativo..."
           >
 
         </div>
@@ -753,8 +752,19 @@ select:focus{
             id="histbtn"
             class="btn light hidden"
             onclick="showHistory()"
+            aria-label="Mostra cronologia"
           >
             Cronologia
+          </button>
+
+          <button
+            id="pdfbtn"
+            type="button"
+            class="btn light"
+            onclick="exportPDF()"
+            aria-label="Esporta report in PDF"
+          >
+            Esporta PDF
           </button>
 
           <button
@@ -788,7 +798,7 @@ select:focus{
       </h1>
 
       <p class="sub">
-        Cerca per nome del cantiere.
+        Cerca per nome del cantiere o visualizza tutti.
       </p>
 
     </div>
@@ -820,6 +830,14 @@ select:focus{
         Cerca
       </button>
 
+      <button
+        class="btn light"
+        onclick="findAllReports()"
+        title="Mostra tutti i report"
+      >
+        Mostra tutti
+      </button>
+
     </div>
 
 
@@ -828,7 +846,7 @@ select:focus{
     <div id="results">
 
       <div class="empty">
-        Inserisci il nome del cantiere e premi Cerca.
+        Inserisci il nome del cantiere e premi Cerca oppure premi Mostra tutti.
       </div>
 
     </div>
@@ -860,6 +878,7 @@ select:focus{
       <button
         class="btn light"
         onclick="closeHistory()"
+        aria-label="Chiudi cronologia"
       >
         ✕
       </button>
@@ -998,12 +1017,16 @@ function rows(arr,p){
 
   return arr.map(function(x,i){
 
+    // aria labels per checkbox per accessibilità
+    const ariaConsegna = `Consegna ${x[0]}`;
+    const ariaConcluso = `Concluso ${x[0]}`;
+
     return `
 
       <tr>
 
         <td>
-          <b>${x[0]}</b>
+          <b>${esc(x[0])}</b>
         </td>
 
         <td class="check">
@@ -1011,6 +1034,7 @@ function rows(arr,p){
           <input
             type="checkbox"
             id="${p}${i}c"
+            aria-label="${esc(ariaConsegna)}"
           >
 
         </td>
@@ -1020,6 +1044,7 @@ function rows(arr,p){
           <input
             type="checkbox"
             id="${p}${i}x"
+            aria-label="${esc(ariaConcluso)}"
           >
 
         </td>
@@ -1030,6 +1055,7 @@ function rows(arr,p){
             class="note"
             id="${p}${i}n"
             placeholder="Note..."
+            aria-label="Note per ${esc(x[0])}"
           >
 
         </td>
@@ -1138,6 +1164,8 @@ function newReport(){
 
 /*******************************************************
  * CERCA REPORT
+ * - ora carica automaticamente i report alla
+ *   apertura della schermata (mostra tutti)
  *******************************************************/
 
 function searchScreen(){
@@ -1147,7 +1175,7 @@ function searchScreen(){
   document.getElementById('results').innerHTML = `
 
     <div class="empty">
-      Inserisci il nome del cantiere e premi Cerca.
+      Caricamento report...
     </div>
 
   `;
@@ -1155,6 +1183,9 @@ function searchScreen(){
   document.getElementById('salert').innerHTML = '';
 
   screen('search');
+
+  // prova a mostrare tutti i report
+  findAllReports();
 
 }
 
@@ -1214,18 +1245,24 @@ function typeChange(){
 
 /*******************************************************
  * CAMBIO INSTALLATORE
+ * - ora gestisce selezione multipla
  *******************************************************/
 
 function installerChange(){
 
-  const value =
-    document.getElementById('installatore').value;
+  const sel =
+    Array.from(
+      document
+        .getElementById('installatore')
+        .selectedOptions || []
+    ).map(o => o.value);
 
+  // mostra il campo "Altro" se tra i selezionati c'è "Altro"
   document
     .getElementById('altro')
     .classList.toggle(
       'hidden',
-      value !== 'Altro'
+      !sel.includes('Altro')
     );
 
 }
@@ -1290,9 +1327,17 @@ function esc(x){
 
 /*******************************************************
  * RACCOGLIE DATI DAL FORM
+ * - Installatore ora è un array serializzato in JSON
  *******************************************************/
 
 function collect(){
+
+  const installSelected =
+    Array.from(
+      document
+        .getElementById('installatore')
+        .selectedOptions || []
+    ).map(o => o.value);
 
   const d = {
 
@@ -1305,8 +1350,9 @@ function collect(){
     Tipo_Intervento:
       document.getElementById('tipo').value,
 
+    // invio come JSON-string per chiarezza lato server
     Installatore:
-      document.getElementById('installatore').value,
+      JSON.stringify(installSelected),
 
     Installatore_Altro:
       document
@@ -1363,6 +1409,7 @@ function collect(){
 
 /*******************************************************
  * CARICA DATI NEL FORM
+ * - supporta Installatore come JSON-string o CSV
  *******************************************************/
 
 function fill(d){
@@ -1376,8 +1423,31 @@ function fill(d){
   document.getElementById('tipo').value =
     d.Tipo_Intervento || '';
 
-  document.getElementById('installatore').value =
-    d.Installatore || '';
+  // Installatore: può essere JSON-string o singolo valore
+  let installers = [];
+
+  if(d.Installatore){
+
+    try{
+      const parsed = JSON.parse(d.Installatore);
+      if(Array.isArray(parsed)){
+        installers = parsed;
+      }else if(typeof parsed === 'string'){
+        // caso in cui è stato salvato come stringa semplice
+        installers = parsed.split(',').map(x=>x.trim()).filter(Boolean);
+      }
+    }catch(e){
+      // non JSON: forse CSV o singolo valore
+      installers = String(d.Installatore).split(',').map(x=>x.trim()).filter(Boolean);
+    }
+
+  }
+
+  // imposta selezione multipla
+  const sel = document.getElementById('installatore');
+  Array.from(sel.options).forEach(function(o){
+    o.selected = installers.includes(o.value);
+  });
 
   document.getElementById('installatoreAltro').value =
     d.Installatore_Altro || '';
@@ -1466,50 +1536,70 @@ function normDate(v){
 
 
 /*******************************************************
- * GET
+ * GET - robust parsing + error handling
  *******************************************************/
 
 async function get(p){
 
-  const r =
-    await fetch(
-      API + '?' +
-      new URLSearchParams(p),
-      {
-        redirect:'follow'
-      }
-    );
+  const url = API + '?' + new URLSearchParams(p);
 
-  return r.json();
+  const r = await fetch(url, { redirect:'follow' });
+
+  if(!r.ok){
+    // tenta leggere testo di errore se disponibile
+    const txt = await r.text().catch(()=>null);
+    throw new Error(`Errore server ${r.status}${txt ? ': ' + txt : ''}`);
+  }
+
+  try{
+    return await r.json();
+  }catch(e){
+    const txt = await r.text().catch(()=>null);
+    throw new Error('Risposta non valida dal server: ' + (txt || e.message));
+  }
 
 }
 
 
 /*******************************************************
- * POST
+ * POST - robust parsing + error handling + timeout
  *******************************************************/
 
 async function post(x){
 
-  const r =
-    await fetch(
-      API,
-      {
-        method:'POST',
+  // semplice timeout wrapper (10s)
+  const controller = new AbortController();
+  const timeout = setTimeout(()=>controller.abort(), 10000);
 
-        headers:{
-          'Content-Type':
-            'text/plain;charset=utf-8'
-        },
+  try{
+    const r = await fetch(API, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json;charset=utf-8' },
+      body: JSON.stringify(x),
+      redirect:'follow',
+      signal: controller.signal
+    });
 
-        body:
-          JSON.stringify(x),
+    if(!r.ok){
+      const txt = await r.text().catch(()=>null);
+      throw new Error(`Errore server ${r.status}${txt ? ': ' + txt : ''}`);
+    }
 
-        redirect:'follow'
-      }
-    );
+    try{
+      return await r.json();
+    }catch(e){
+      const txt = await r.text().catch(()=>null);
+      throw new Error('Risposta non valida dal server: ' + (txt || e.message));
+    }
 
-  return r.json();
+  }catch(e){
+    if(e.name === 'AbortError'){
+      throw new Error('Timeout di connessione con il server.');
+    }
+    throw e;
+  }finally{
+    clearTimeout(timeout);
+  }
 
 }
 
@@ -1524,7 +1614,7 @@ async function save(){
 
   const d = collect();
 
-
+  // basic validation
   if(
     !d.Tipo_Intervento ||
     !d.Cantiere ||
@@ -1540,9 +1630,10 @@ async function save(){
 
   }
 
-
+  // se Altro è selezionato ma non specificato
+  const installers = JSON.parse(d.Installatore || '[]');
   if(
-    d.Installatore === 'Altro' &&
+    installers.includes('Altro') &&
     !d.Installatore_Altro
   ){
 
@@ -1554,20 +1645,19 @@ async function save(){
 
   }
 
-
   const saveButton =
     document.getElementById('savebtn');
 
   saveButton.disabled = true;
 
+  const prevText = saveButton.textContent;
+
   saveButton.textContent =
     'Salvataggio...';
-
 
   try{
 
     let r;
-
 
     if(id){
 
@@ -1588,22 +1678,16 @@ async function save(){
 
     }
 
-
-    if(!r.success){
-
+    if(!r || !r.success){
       throw new Error(
-        r.error ||
-        'Errore di salvataggio.'
+        (r && r.error) ? r.error : 'Errore di salvataggio.'
       );
-
     }
-
 
     id = r.id;
 
     ver =
-      Number(r.versione);
-
+      Number(r.versione) || Number(r.Versione) || 1;
 
     document.getElementById('title').textContent =
       'Report ' + id;
@@ -1611,21 +1695,17 @@ async function save(){
     document.getElementById('subtitle').textContent =
       'Versione ' + ver;
 
-
     document
       .getElementById('histbtn')
       .classList.remove('hidden');
 
-
     saveButton.textContent =
       'Salva nuova versione';
-
 
     alertBox(
       `Report ${id} salvato correttamente come versione ${ver}.`,
       true
     );
-
 
   }catch(e){
 
@@ -1634,22 +1714,10 @@ async function save(){
       'Errore di comunicazione con il database.'
     );
 
-
   }finally{
 
     saveButton.disabled = false;
-
-    if(
-      saveButton.textContent ===
-      'Salvataggio...'
-    ){
-
-      saveButton.textContent =
-        id
-          ? 'Salva nuova versione'
-          : 'Salva report';
-
-    }
+    saveButton.textContent = prevText === 'Salvataggio...' ? (id ? 'Salva nuova versione' : 'Salva report') : saveButton.textContent;
 
   }
 
@@ -1668,6 +1736,7 @@ async function findReports(){
   const searchAlert =
     document.getElementById('salert');
 
+  const q = document.getElementById('q').value.trim();
 
   results.innerHTML = `
 
@@ -1679,7 +1748,6 @@ async function findReports(){
 
   searchAlert.innerHTML = '';
 
-
   try{
 
     const r =
@@ -1687,26 +1755,15 @@ async function findReports(){
 
         action:'search',
 
-        cantiere:
-          document
-            .getElementById('q')
-            .value
-            .trim()
+        cantiere: q
 
       });
 
-
     if(!r.success){
-
-      throw new Error(
-        r.error
-      );
-
+      throw new Error(r.error || 'Errore nella ricerca.');
     }
 
-
-    if(!r.reports.length){
-
+    if(!r.reports || !r.reports.length){
       results.innerHTML = `
 
         <div class="empty">
@@ -1714,11 +1771,8 @@ async function findReports(){
         </div>
 
       `;
-
       return;
-
     }
-
 
     results.innerHTML =
       r.reports.map(function(x){
@@ -1767,6 +1821,112 @@ async function findReports(){
 
       }).join('');
 
+  }catch(e){
+
+    results.innerHTML = '';
+
+    searchAlert.innerHTML = `
+
+      <div class="alert error">
+        ${esc(e.message)}
+      </div>
+
+    `;
+
+  }
+
+}
+
+/*******************************************************
+ * MOSTRA TUTTI I REPORT (usata all'apertura ricerca)
+ *******************************************************/
+async function findAllReports(){
+
+  const results =
+    document.getElementById('results');
+
+  const searchAlert =
+    document.getElementById('salert');
+
+  results.innerHTML = `
+
+    <div class="empty">
+      Caricamento...
+    </div>
+
+  `;
+
+  searchAlert.innerHTML = '';
+
+  try{
+
+    const r =
+      await get({
+        action:'search',
+        cantiere: '' // backend potrebbe interpretare come "tutti"
+      });
+
+    if(!r.success){
+      throw new Error(r.error || 'Errore nel caricamento dei report.');
+    }
+
+    if(!r.reports || !r.reports.length){
+      results.innerHTML = `
+
+        <div class="empty">
+          Nessun report disponibile.
+        </div>
+
+      `;
+      return;
+    }
+
+    results.innerHTML =
+      r.reports.map(function(x){
+
+        return `
+
+          <div class="result">
+
+            <div>
+
+              <b>
+                ${esc(x.Cantiere)}
+              </b>
+
+              <span>
+                ${esc(x.ID_Report)}
+                ·
+                ${esc(x.Data_Intervento)}
+                ·
+                ${esc(x.Installatore)}
+                ·
+                ${esc(x.Tipo_Intervento)}
+              </span>
+
+            </div>
+
+
+            <div>
+
+              <span class="version">
+                V${esc(x.Versione)}
+              </span>
+
+              <button
+                class="btn primary"
+                onclick="openReport('${String(x.ID_Report).replace(/'/g,"\\'")}')"
+              >
+                Apri
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join('');
 
   }catch(e){
 
@@ -1805,7 +1965,6 @@ async function openReport(reportId){
 
   saveButton.disabled = true;
 
-
   try{
 
     const r =
@@ -1817,7 +1976,6 @@ async function openReport(reportId){
 
       });
 
-
     if(!r.success){
 
       throw new Error(
@@ -1826,33 +1984,26 @@ async function openReport(reportId){
 
     }
 
-
     id =
       reportId;
 
     ver =
       Number(r.report.Versione) || 1;
 
-
     fill(r.report);
-
 
     document.getElementById('title').textContent =
       'Report ' + reportId;
 
-
     document.getElementById('subtitle').textContent =
       'Versione ' + ver;
-
 
     document
       .getElementById('histbtn')
       .classList.remove('hidden');
 
-
     saveButton.textContent =
       'Salva nuova versione';
-
 
   }catch(e){
 
@@ -1860,7 +2011,6 @@ async function openReport(reportId){
       e.message ||
       'Errore nel caricamento del report.'
     );
-
 
   }finally{
 
@@ -1916,7 +2066,6 @@ async function showHistory(){
 
       });
 
-
     if(!r.success){
 
       throw new Error(
@@ -1924,7 +2073,6 @@ async function showHistory(){
       );
 
     }
-
 
     body.innerHTML = `
 
@@ -2021,6 +2169,98 @@ function closeHistory(){
   document
     .getElementById('modal')
     .classList.remove('open');
+
+}
+
+
+/*******************************************************
+ * ESPORTA IN PDF (tramite finestra di stampa)
+ * - genera una vista pulita del report e apre print()
+ *******************************************************/
+
+function exportPDF(){
+
+  // raccogli dati attuali
+  const data = collect();
+
+  // se Installatore è JSON-string, rendilo leggibile
+  let installersDisplay = '';
+  try{
+    const arr = JSON.parse(data.Installatore || '[]');
+    installersDisplay = Array.isArray(arr) ? arr.join(', ') : String(data.Installatore || '');
+  }catch(e){
+    installersDisplay = String(data.Installatore || '');
+  }
+
+  // prendi le righe a seconda del tipo
+  const a = data.Tipo_Intervento === 'Impianto Fotovoltaico' ? FV : CL;
+  const p = data.Tipo_Intervento === 'Impianto Fotovoltaico' ? 'f' : 'c';
+
+  let rowsHtml = '';
+  a.forEach(function(x,i){
+    const consegna = data[x[1] + '_Consegna'] === 'SI' ? 'SI' : '';
+    const concluso = data[x[1] + '_Concluso'] === 'SI' ? 'SI' : '';
+    const note = esc(data[x[1] + '_Note'] || '');
+    rowsHtml += `<tr>
+      <td style="padding:6px;border:1px solid #ddd;"><b>${esc(x[0])}</b></td>
+      <td style="padding:6px;border:1px solid #ddd;text-align:center;">${consegna}</td>
+      <td style="padding:6px;border:1px solid #ddd;text-align:center;">${concluso}</td>
+      <td style="padding:6px;border:1px solid #ddd;">${note}</td>
+    </tr>`;
+  });
+
+  const title = id ? `Report ${esc(id)}` : 'Report (Bozza)';
+  const subtitle = ver ? `Versione ${esc(ver)}` : '';
+
+  const html = `
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>${title}</title>
+      <style>
+        body{font-family:Arial,Helvetica,sans-serif;color:#111;padding:20px;}
+        h1{margin:0 0 6px;}
+        .muted{color:#666;margin-bottom:12px;}
+        table{border-collapse:collapse;width:100%;margin-top:10px;}
+        th{background:#f8fafc;padding:8px;border:1px solid #e6e6e6;text-align:left;}
+      </style>
+    </head>
+    <body>
+      <h1>${title}</h1>
+      <div class="muted">${subtitle}</div>
+      <p><b>Cantiere:</b> ${esc(data.Cantiere || '')}</p>
+      <p><b>Data intervento:</b> ${esc(data.Data_Intervento || '')}</p>
+      <p><b>Tipo intervento:</b> ${esc(data.Tipo_Intervento || '')}</p>
+      <p><b>Installatori:</b> ${esc(installersDisplay)} ${data.Installatore_Altro ? ' - ' + esc(data.Installatore_Altro) : ''}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Lavorazione</th>
+            <th style="width:120px;text-align:center;">Consegna</th>
+            <th style="width:120px;text-align:center;">Concluso</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+      <div style="margin-top:20px;color:#666;font-size:12px;">Generato da TCE - Report Intervento</div>
+    </body>
+    </html>
+  `;
+
+  const win = window.open('', '_blank', 'noopener');
+  if(!win){
+    alertBox('Impossibile aprire la finestra di stampa. Controlla il blocco popup del browser.');
+    return;
+  }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  // aspetta un attimo che la finestra renderizzi
+  setTimeout(()=>{ win.print(); }, 500);
 
 }
 
