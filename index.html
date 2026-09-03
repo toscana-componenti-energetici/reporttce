@@ -1007,6 +1007,8 @@ select:focus{
 
 <script>
 
+
+
 /*******************************************************
  * COLLEGAMENTO DATABASE
  * API Google Apps Script
@@ -1209,28 +1211,26 @@ function collectTableData(id) {
   });
   return data;
 }
-
 function sendToAPI(data) {
   showAlert('Salvataggio in corso...', 'success');
   
   fetch(API, {
     method: 'POST',
+    mode: 'no-cors', 
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8',
+    },
     body: JSON.stringify(data)
   })
-  .then(r => r.json())
-  .then(result => {
-    if (result.success) {
-      showAlert('✅ Report salvato con successo!', 'success');
-      setTimeout(home, 2000);
-    } else {
-      showAlert('❌ Errore: ' + (result.error || 'Errore sconosciuto'), 'error');
-    }
+  .then(() => {
+    showAlert('✅ Report salvato con successo!', 'success');
+    setTimeout(home, 2000);
   })
   .catch(err => {
+    console.log(err);
     showAlert('❌ Errore di connessione: ' + err.message, 'error');
   });
 }
-
 function showAlert(msg, type) {
   const box = document.getElementById('alertBox');
   box.innerHTML = `<div class="alert ${type}">${msg}</div>`;
@@ -1256,9 +1256,13 @@ function findAllReports() {
 function fetchReports(filter) {
   showSearchAlert('Ricerca in corso...', 'success');
   
-  fetch(API + '?action=search', {
-    method: 'POST',
-    body: JSON.stringify(filter)
+  let url = API + '?action=search';
+  if (filter && filter.cantiere) {
+    url += '&cantiere=' + encodeURIComponent(filter.cantiere);
+  }
+  
+  fetch(url, {
+    method: 'GET'
   })
   .then(r => r.json())
   .then(results => {
@@ -1268,7 +1272,6 @@ function fetchReports(filter) {
     showSearchAlert('❌ Errore nel caricamento: ' + err.message, 'error');
   });
 }
-
 function displayResults(results) {
   const container = document.getElementById('results');
   if (!results || results.length === 0) {
