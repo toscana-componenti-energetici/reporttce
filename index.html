@@ -195,15 +195,15 @@ select:focus{
 }
 
 .table{
-  overflow:auto;
-  border:1px solid var(--b);
-  border-radius:11px;
+  overflow:visible;
+  border:none;
+  border-radius:0;
 }
 
 .work{
   width:100%;
   border-collapse:collapse;
-  min-width:760px;
+  min-width:auto;
 }
 
 .work th{
@@ -453,6 +453,80 @@ select:focus{
     padding:10px;
     font-size:15px;
   }
+
+  /* Tabella mobile - card layout */
+  .work {
+    display:block;
+    border-collapse:separate;
+    border-spacing:0;
+  }
+
+  .work thead {
+    display:none;
+  }
+
+  .work tbody {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .work tr {
+    display:grid;
+    grid-template-columns:1fr;
+    border:1px solid var(--b);
+    border-radius:8px;
+    overflow:hidden;
+  }
+
+  .work td {
+    border:none;
+    border-bottom:1px solid var(--b);
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .work td:last-child {
+    border-bottom:none;
+  }
+
+  .work td:first-child {
+    background:#f9fafb;
+    font-weight:bold;
+    padding:14px 12px;
+  }
+
+  .work td.check::before {
+    content:attr(data-label);
+    font-weight:500;
+    font-size:12px;
+    color:var(--m);
+  }
+
+  .work td.note::before {
+    content:attr(data-label);
+    font-weight:500;
+    font-size:12px;
+    color:var(--m);
+  }
+
+  .work input {
+    width:auto;
+    margin:0;
+  }
+
+  .work input[type="checkbox"] {
+    width:18px;
+    height:18px;
+  }
+
+  .work input[type="text"] {
+    width:auto;
+    max-width:150px;
+  }
+
 }
 
 @media(min-width:701px){
@@ -1086,9 +1160,9 @@ function loadTable(id, data) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${item[0]}</td>
-      <td class="check"><input type="checkbox" name="${item[1]}_consegna"></td>
-      <td class="check"><input type="checkbox" name="${item[1]}_concluso"></td>
-      <td class="note"><input type="text" name="${item[1]}_note" placeholder="Note..."></td>
+      <td class="check" data-label="Consegna"><input type="checkbox" name="${item[1]}_consegna"></td>
+      <td class="check" data-label="Concluso"><input type="checkbox" name="${item[1]}_concluso"></td>
+      <td class="note" data-label="Note"><input type="text" name="${item[1]}_note" placeholder="Note..."></td>
     `;
     body.appendChild(tr);
   });
