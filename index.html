@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Intervento</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7f5;
+            color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .logo p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .progress {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 35px;
+        }
+
+        .progress div {
+            height: 5px;
+            flex: 1;
+            background: #e5e7eb;
+            border-radius: 5px;
+        }
+
+        .progress div.active {
+            background: #22c55e;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option:hover {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .option.selected {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .option-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .option-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .option-description {
+            color: #6b7280;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 13px 22px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-back {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-next {
+            background: #22c55e;
+            color: white;
+            margin-left: auto;
+        }
+
+        .btn-next:hover {
+            background: #16a34a;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">
+        <h1>REPORT INTERVENTO</h1>
+        <p>Compila il rapporto relativo all'intervento effettuato</p>
+    </div>
+
+    <div class="progress">
+        <div class="active"></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step active" id="step1">
+
+        <h2>Tipo di intervento</h2>
+
+        <p class="subtitle">
+            Seleziona il tipo di impianto sul quale è stato effettuato l'intervento.
+        </p>
+
+        <div class="options">
+
+            <div class="option" onclick="selectOption(this, 'fotovoltaico')">
+                <div class="option-icon">☀️</div>
+                <div class="option-title">
+                    Impianto Fotovoltaico
+                </div>
+                <div class="option-description">
+                    Intervento su impianto fotovoltaico
+                </div>
+            </div>
+
+            <div class="option" onclick="selectOption(this, 'climatizzazione')">
+                <div class="option-icon">❄️</div>
+                <div class="option-title">
+                    Impianto Climatizzazione
+                </div>
+                <div class="option-description">
+                    Intervento su impianto di climatizzazione
+                </div>
+            </div>
+
+        </div>
+
+        <div class="buttons">
+            <button class="btn-next" onclick="nextStep()">
+                Avanti →
+            </button>
+        </div>
+
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step" id="step2">
+
+        <h2>Dati dell'intervento</h2>
+
+        <p class="subtitle">
+            Inserisci le informazioni principali.
+        </p>
+
+        <div>
+            <label>Cliente</label>
+            <input type="text" style="width:100%; padding:12px; margin:8px 0 18px;">
+            
+            <label>Indirizzo</label>
+            <input type="text" style="width:100%; padding:12px; margin:8px 0 18px;">
+
+            <label>Data intervento</label>
+            <input type="date" style="width:100%; padding:12px; margin:8px 0 18px;">
+        </div>
+
+        <div class="buttons">
+            <button class="btn-back" onclick="prevStep()">
+                ← Indietro
+            </button>
+
+            <button class="btn-next" onclick="nextStep()">
+                Avanti →
+            </button>
+        </div>
+
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step" id="step3">
+
+        <h2>Descrizione intervento</h2>
+
+        <p class="subtitle">
+            Descrivi il problema riscontrato e il lavoro effettuato.
+        </p>
+
+        <textarea
+            placeholder="Descrizione dell'intervento..."
+            style="width:100%; min-height:180px; padding:12px; resize:vertical;"
+        ></textarea>
+
+        <div class="buttons">
+            <button class="btn-back" onclick="prevStep()">
+                ← Indietro
+            </button>
+
+            <button class="btn-next" onclick="nextStep()">
+                Avanti →
+            </button>
+        </div>
+
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step" id="step4">
+
+        <h2>Riepilogo</h2>
+
+        <p class="subtitle">
+            Controlla i dati prima di inviare il report.
+        </p>
+
+        <div style="
+            background:#f3f4f6;
+            padding:20px;
+            border-radius:10px;
+        ">
+            Il riepilogo dell'intervento verrà mostrato qui.
+        </div>
+
+        <div class="buttons">
+            <button class="btn-back" onclick="prevStep()">
+                ← Indietro
+            </button>
+
+            <button class="btn-next" onclick="alert('Report pronto per l\\'invio!')">
+                Invia report ✓
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let currentStep = 1;
+let selectedType = null;
+
+function selectOption(element, type) {
+
+    document.querySelectorAll('.option').forEach(option => {
+        option.classList.remove('selected');
+    });
+
+    element.classList.add('selected');
+
+    selectedType = type;
+}
+
+function showStep(step) {
+
+    document.querySelectorAll('.step').forEach(element => {
+        element.classList.remove('active');
+    });
+
+    document.getElementById('step' + step).classList.add('active');
+
+    document.querySelectorAll('.progress div').forEach((bar, index) => {
+        bar.classList.toggle('active', index < step);
+    });
+}
+
+function nextStep() {
+
+    if (currentStep === 1 && !selectedType) {
+        alert('Seleziona prima il tipo di intervento.');
+        return;
+    }
+
+    if (currentStep < 4) {
+        currentStep++;
+        showStep(currentStep);
+    }
+}
+
+function prevStep() {
+
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+    }
+}
+
+</script>
+
+</body>
+</html>
