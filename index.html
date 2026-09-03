@@ -1009,7 +1009,7 @@ select:focus{
 
 /*******************************************************
  * COLLEGAMENTO DATABASE
- * (API impostata sull'URL che mi hai fornito)
+ * API Google Apps Script
  *******************************************************/
 
 const API =
@@ -1212,6 +1212,8 @@ function collectTableData(id) {
 }
 
 function sendToAPI(data) {
+  showAlert('Salvataggio in corso...', 'success');
+  
   fetch(API, {
     method: 'POST',
     body: JSON.stringify(data)
@@ -1219,14 +1221,14 @@ function sendToAPI(data) {
   .then(r => r.json())
   .then(result => {
     if (result.success) {
-      showAlert('Report salvato con successo!', 'success');
+      showAlert('✅ Report salvato con successo!', 'success');
       setTimeout(home, 2000);
     } else {
-      showAlert('Errore nel salvataggio: ' + (result.error || 'Errore sconosciuto'), 'error');
+      showAlert('❌ Errore: ' + (result.error || 'Errore sconosciuto'), 'error');
     }
   })
   .catch(err => {
-    showAlert('Errore di connessione: ' + err.message, 'error');
+    showAlert('❌ Errore di connessione: ' + err.message, 'error');
   });
 }
 
@@ -1253,6 +1255,8 @@ function findAllReports() {
 }
 
 function fetchReports(filter) {
+  showSearchAlert('Ricerca in corso...', 'success');
+  
   fetch(API + '?action=search', {
     method: 'POST',
     body: JSON.stringify(filter)
@@ -1262,7 +1266,7 @@ function fetchReports(filter) {
     displayResults(results);
   })
   .catch(err => {
-    showSearchAlert('Errore nel caricamento: ' + err.message, 'error');
+    showSearchAlert('❌ Errore nel caricamento: ' + err.message, 'error');
   });
 }
 
@@ -1304,10 +1308,9 @@ function loadReport(id) {
     document.getElementById('title').textContent = 'Modifica report';
     document.getElementById('subtitle').textContent = 'Aggiorna i dati dell\'intervento.';
     document.getElementById('histbtn').classList.remove('hidden');
-    showHistory(id);
   })
   .catch(err => {
-    showSearchAlert('Errore nel caricamento del report: ' + err.message, 'error');
+    showSearchAlert('❌ Errore nel caricamento del report: ' + err.message, 'error');
   });
 }
 
@@ -1319,6 +1322,10 @@ function showHistory(id) {
   .then(r => r.json())
   .then(history => {
     const body = document.getElementById('historybody');
+    if (!history || history.length === 0) {
+      body.innerHTML = '<div class="empty">Nessuna cronologia disponibile</div>';
+      return;
+    }
     body.innerHTML = history.map((h, i) => `
       <div class="hi ${i === 0 ? 'current' : ''}">
         <div>
@@ -1328,6 +1335,10 @@ function showHistory(id) {
         <span class="version">${h.versione}</span>
       </div>
     `).join('');
+  })
+  .catch(err => {
+    const body = document.getElementById('historybody');
+    body.innerHTML = '<div class="empty">Errore nel caricamento della cronologia</div>';
   });
 }
 
