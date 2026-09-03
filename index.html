@@ -385,6 +385,9 @@ select:focus{
   border-radius:10px;
 }
 
+.checkbox-list label{cursor:pointer;}
+.checkbox-list input[type="checkbox"]{margin-right:8px;}
+
 @media(max-width:700px){
 
   .home,
@@ -576,30 +579,25 @@ select:focus{
         </div>
 
 
-        <div class="field">
+        <!-- INSTALLATORI: checkbox list -->
+        <div class="field" id="installatoriField">
 
           <label>
             Installatore (seleziona uno o più) *
           </label>
 
-          <select
-            id="installatore"
-            required
-            onchange="installerChange()"
-            multiple
-            size="4"
-          >
+          <div id="installatoriList" class="checkbox-list" role="group" aria-labelledby="installatoriLabel">
 
-            <option>Fagio</option>
-            <option>Brugno</option>
-            <option>Selman</option>
-            <option>Michele</option>
-            <option>Izmir</option>
-            <option>Dionis</option>
-            <option>Aldo</option>
-            <option>Altro</option>
+            <label><input type="checkbox" name="installatore" value="Fagio"> Fagio</label>
+            <label><input type="checkbox" name="installatore" value="Brugno"> Brugno</label>
+            <label><input type="checkbox" name="installatore" value="Selman"> Selman</label>
+            <label><input type="checkbox" name="installatore" value="Michele"> Michele</label>
+            <label><input type="checkbox" name="installatore" value="Izmir"> Izmir</label>
+            <label><input type="checkbox" name="installatore" value="Dionis"> Dionis</label>
+            <label><input type="checkbox" name="installatore" value="Aldo"> Aldo</label>
+            <label><input type="checkbox" name="installatore" value="Altro"> Altro</label>
 
-          </select>
+          </div>
 
         </div>
 
@@ -896,10 +894,11 @@ select:focus{
 
 /*******************************************************
  * COLLEGAMENTO DATABASE
+ * (API impostata sull'URL che mi hai fornito)
  *******************************************************/
 
 const API =
-'https://script.google.com/macros/s/AKfycbxtPwsh63S4he2uoCpfpekJyxs0EXamOhc0uuM-Ki-gXCL3ffzBW8eE0fuUr4lKIFjd/exec';
+  'https://script.google.com/macros/s/AKfycbxtPwsh63S4he2uoCpfpekJyxs0EXamOhc0uuM-Ki-gXCL3ffzBW8eE0fuUr4lKIFjd/exec';
 
 
 /*******************************************************
@@ -972,7 +971,7 @@ const FV = [
 ];
 
 
-/*******************************************************
+ /*******************************************************
  * LAVORAZIONI CLIMATIZZAZIONE
  *******************************************************/
 
@@ -1001,7 +1000,7 @@ const CL = [
 ];
 
 
-/*******************************************************
+ /*******************************************************
  * STATO DEL REPORT
  *******************************************************/
 
@@ -1081,6 +1080,12 @@ function init(){
   document.getElementById('clbody').innerHTML =
     rows(CL,'c');
 
+  // Aggiungi listener per le checkbox degli installatori
+  const ilist = document.getElementById('installatoriList');
+  if (ilist){
+    ilist.addEventListener('change', installerChange);
+  }
+
 }
 
 init();
@@ -1109,7 +1114,7 @@ function screen(x){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * HOME
  *******************************************************/
 
@@ -1123,7 +1128,7 @@ function home(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * NUOVO REPORT
  *******************************************************/
 
@@ -1162,7 +1167,7 @@ function newReport(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * CERCA REPORT
  * - ora carica automaticamente i report alla
  *   apertura della schermata (mostra tutti)
@@ -1190,7 +1195,7 @@ function searchScreen(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * PULISCE LE RIGHE
  *******************************************************/
 
@@ -1214,10 +1219,21 @@ function clearRows(){
 
     });
 
+  // pulisci le checkbox degli installatori
+  document
+    .querySelectorAll('#installatoriList input[type=checkbox]')
+    .forEach(function(cb){
+      cb.checked = false;
+    });
+
+  // pulisci campo Altro
+  const ia = document.getElementById('installatoreAltro');
+  if(ia) ia.value = '';
+
 }
 
 
-/*******************************************************
+ /*******************************************************
  * CAMBIO TIPO INTERVENTO
  *******************************************************/
 
@@ -1243,32 +1259,32 @@ function typeChange(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * CAMBIO INSTALLATORE
- * - ora gestisce selezione multipla
+ * - ora gestisce checkbox multipli
  *******************************************************/
 
 function installerChange(){
 
-  const sel =
+  const checked =
     Array.from(
-      document
-        .getElementById('installatore')
-        .selectedOptions || []
-    ).map(o => o.value);
+      document.querySelectorAll(
+        '#installatoriList input[type=checkbox]:checked'
+      ) || []
+    ).map(cb => cb.value);
 
   // mostra il campo "Altro" se tra i selezionati c'è "Altro"
   document
     .getElementById('altro')
     .classList.toggle(
       'hidden',
-      !sel.includes('Altro')
+      !checked.includes('Altro')
     );
 
 }
 
 
-/*******************************************************
+ /*******************************************************
  * MESSAGGI
  *******************************************************/
 
@@ -1298,7 +1314,7 @@ function alertBox(m,ok=false){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * ESCAPE TESTO
  *******************************************************/
 
@@ -1325,19 +1341,19 @@ function esc(x){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * RACCOGLIE DATI DAL FORM
- * - Installatore ora è un array serializzato in JSON
+ * - Installatore ora è letto dalle checkbox e serializzato in JSON
  *******************************************************/
 
 function collect(){
 
   const installSelected =
     Array.from(
-      document
-        .getElementById('installatore')
-        .selectedOptions || []
-    ).map(o => o.value);
+      document.querySelectorAll(
+        '#installatoriList input[type=checkbox]:checked'
+      ) || []
+    ).map(cb => cb.value);
 
   const d = {
 
@@ -1407,7 +1423,7 @@ function collect(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * CARICA DATI NEL FORM
  * - supporta Installatore come JSON-string o CSV
  *******************************************************/
@@ -1443,10 +1459,9 @@ function fill(d){
 
   }
 
-  // imposta selezione multipla
-  const sel = document.getElementById('installatore');
-  Array.from(sel.options).forEach(function(o){
-    o.selected = installers.includes(o.value);
+  // imposta checkbox selezionate
+  Array.from(document.querySelectorAll('#installatoriList input[type=checkbox]')).forEach(function(cb){
+    cb.checked = installers.includes(cb.value);
   });
 
   document.getElementById('installatoreAltro').value =
@@ -1456,9 +1471,9 @@ function fill(d){
 
   installerChange();
 
-  clearRows();
+  clearRows(); // pulisce righe lavorazioni; mantiene le checkbox impostate da sopra
 
-
+  // reinseriamo di nuovo i valori delle righe (clearRows le aveva resettate)
   const a =
     d.Tipo_Intervento ===
     'Impianto Fotovoltaico'
@@ -1501,7 +1516,7 @@ function fill(d){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * NORMALIZZA DATA
  *******************************************************/
 
@@ -1535,7 +1550,7 @@ function normDate(v){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * GET - robust parsing + error handling
  *******************************************************/
 
@@ -1561,7 +1576,7 @@ async function get(p){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * POST - robust parsing + error handling + timeout
  *******************************************************/
 
@@ -1604,7 +1619,7 @@ async function post(x){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * SALVA REPORT
  *******************************************************/
 
@@ -1724,7 +1739,7 @@ async function save(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * CERCA REPORT
  *******************************************************/
 
@@ -1837,7 +1852,8 @@ async function findReports(){
 
 }
 
-/*******************************************************
+
+ /*******************************************************
  * MOSTRA TUTTI I REPORT (usata all'apertura ricerca)
  *******************************************************/
 async function findAllReports(){
@@ -1945,7 +1961,7 @@ async function findAllReports(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * APRE REPORT
  *******************************************************/
 
@@ -2021,7 +2037,7 @@ async function openReport(reportId){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * CRONOLOGIA
  *******************************************************/
 
@@ -2160,7 +2176,7 @@ async function showHistory(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * CHIUDE CRONOLOGIA
  *******************************************************/
 
@@ -2173,9 +2189,8 @@ function closeHistory(){
 }
 
 
-/*******************************************************
+ /*******************************************************
  * ESPORTA IN PDF (tramite finestra di stampa)
- * - genera una vista pulita del report e apre print()
  *******************************************************/
 
 function exportPDF(){
