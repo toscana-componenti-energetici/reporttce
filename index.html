@@ -388,7 +388,7 @@ select:focus{
 .checkbox-list {
   display:grid;
   grid-template-columns:1fr;
-  gap:10px;
+  gap:8px;
 }
 
 .checkbox-list label {
@@ -411,6 +411,7 @@ select:focus{
   margin:0;
   flex-shrink:0;
   accent-color:var(--p);
+  cursor:pointer;
 }
 
 @media(max-width:700px){
@@ -1038,6 +1039,238 @@ const CL = [
   ['Messa in funzione','Messa_in_Funzione']
 
 ];
+
+/*******************************************************
+ * FUNZIONI
+ *******************************************************/
+
+function newReport() {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('form').classList.add('active');
+  document.getElementById('title').textContent = 'Nuovo report';
+  document.getElementById('subtitle').textContent = 'Compila i dati dell\'intervento.';
+  document.getElementById('tipo').value = '';
+  document.getElementById('cantiere').value = '';
+  document.getElementById('data').value = '';
+  document.querySelectorAll('.checkbox-list input').forEach(el => el.checked = false);
+  typeChange();
+}
+
+function home() {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('home').classList.add('active');
+  clearAlert();
+}
+
+function searchScreen() {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('search').classList.add('active');
+}
+
+function typeChange() {
+  const tipo = document.getElementById('tipo').value;
+  document.getElementById('fv').classList.toggle('hidden', tipo !== 'Impianto Fotovoltaico');
+  document.getElementById('cl').classList.toggle('hidden', tipo !== 'Impianto Climatizzazione');
+  
+  if (tipo === 'Impianto Fotovoltaico') {
+    loadTable('fv', FV);
+  } else if (tipo === 'Impianto Climatizzazione') {
+    loadTable('cl', CL);
+  }
+}
+
+function loadTable(id, data) {
+  const body = document.getElementById(id + 'body');
+  body.innerHTML = '';
+  data.forEach(item => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item[0]}</td>
+      <td class="check"><input type="checkbox" name="${item[1]}_consegna"></td>
+      <td class="check"><input type="checkbox" name="${item[1]}_concluso"></td>
+      <td class="note"><input type="text" name="${item[1]}_note" placeholder="Note..."></td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+function save() {
+  const tipo = document.getElementById('tipo').value;
+  const cantiere = document.getElementById('cantiere').value;
+  const data = document.getElementById('data').value;
+  
+  const installatori = Array.from(document.querySelectorAll('.checkbox-list input:checked'))
+    .map(el => el.value);
+  
+  if (!tipo || !cantiere || !data || installatori.length === 0) {
+    showAlert('Compila tutti i campi obbligatori', 'error');
+    return;
+  }
+  
+  const reportData = {
+    tipo,
+    cantiere,
+    data,
+    installatori: installatori.join(', ')
+  };
+  
+  if (tipo === 'Impianto Fotovoltaico') {
+    reportData.lavorazioni = collectTableData('fv');
+  } else {
+    reportData.lavorazioni = collectTableData('cl');
+  }
+  
+  sendToAPI(reportData);
+}
+
+function collectTableData(id) {
+  const data = {};
+  document.querySelectorAll(`#${id}body tr`).forEach(tr => {
+    const cells = tr.querySelectorAll('input');
+    const lavorazione = tr.querySelector('td').textContent.trim();
+    data[lavorazione] = {
+      consegna: cells[0].checked,
+      concluso: cells[1].checked,
+      note: cells[2].value
+    };
+  });
+  return data;
+}
+
+function sendToAPI(data) {
+  fetch(API, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  })
+  .then(r => r.json())
+  .then(result => {
+    if (result.success) {
+      showAlert('Report salvato con successo!', 'success');
+      setTimeout(home, 2000);
+    } else {
+      showAlert('Errore nel salvataggio: ' + (result.error || 'Errore sconosciuto'), 'error');
+    }
+  })
+  .catch(err => {
+    showAlert('Errore di connessione: ' + err.message, 'error');
+  });
+}
+
+function showAlert(msg, type) {
+  const box = document.getElementById('alertBox');
+  box.innerHTML = `<div class="alert ${type}">${msg}</div>`;
+}
+
+function clearAlert() {
+  document.getElementById('alertBox').innerHTML = '';
+}
+
+function findReports() {
+  const q = document.getElementById('q').value.trim();
+  if (!q) {
+    showSearchAlert('Inserisci il nome del cantiere', 'error');
+    return;
+  }
+  fetchReports({ cantiere: q });
+}
+
+function findAllReports() {
+  fetchReports({});
+}
+
+function fetchReports(filter) {
+  fetch(API + '?action=search', {
+    method: 'POST',
+    body: JSON.stringify(filter)
+  })
+  .then(r => r.json())
+  .then(results => {
+    displayResults(results);
+  })
+  .catch(err => {
+    showSearchAlert('Errore nel caricamento: ' + err.message, 'error');
+  });
+}
+
+function displayResults(results) {
+  const container = document.getElementById('results');
+  if (!results || results.length === 0) {
+    container.innerHTML = '<div class="empty">Nessun report trovato.</div>';
+    return;
+  }
+  
+  container.innerHTML = results.map(r => `
+    <div class="result">
+      <div>
+        <strong>${r.cantiere}</strong>
+        <span>${r.data}</span>
+        <span>${r.tipo}</span>
+      </div>
+      <button class="btn light" onclick="loadReport('${r.id}')">Modifica</button>
+    </div>
+  `).join('');
+}
+
+function loadReport(id) {
+  fetch(API + '?action=get&id=' + id)
+  .then(r => r.json())
+  .then(report => {
+    document.getElementById('tipo').value = report.tipo;
+    document.getElementById('cantiere').value = report.cantiere;
+    document.getElementById('data').value = report.data;
+    
+    document.querySelectorAll('.checkbox-list input').forEach(el => {
+      el.checked = report.installatori.includes(el.value);
+    });
+    
+    typeChange();
+    
+    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+    document.getElementById('form').classList.add('active');
+    document.getElementById('title').textContent = 'Modifica report';
+    document.getElementById('subtitle').textContent = 'Aggiorna i dati dell\'intervento.';
+    document.getElementById('histbtn').classList.remove('hidden');
+    showHistory(id);
+  })
+  .catch(err => {
+    showSearchAlert('Errore nel caricamento del report: ' + err.message, 'error');
+  });
+}
+
+function showHistory(id) {
+  const modal = document.getElementById('modal');
+  modal.classList.add('open');
+  
+  fetch(API + '?action=history&id=' + id)
+  .then(r => r.json())
+  .then(history => {
+    const body = document.getElementById('historybody');
+    body.innerHTML = history.map((h, i) => `
+      <div class="hi ${i === 0 ? 'current' : ''}">
+        <div>
+          <strong>${h.data}</strong>
+          <span class="muted">${h.ora}</span>
+        </div>
+        <span class="version">${h.versione}</span>
+      </div>
+    `).join('');
+  });
+}
+
+function closeHistory() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function exportPDF() {
+  alert('Funzione di esportazione PDF in sviluppo');
+}
+
+function showSearchAlert(msg, type) {
+  const box = document.getElementById('salert');
+  box.innerHTML = `<div class="alert ${type}">${msg}</div>`;
+}
+
 </script>
+
 </body>
 </html>
