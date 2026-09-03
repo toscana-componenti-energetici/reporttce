@@ -1,363 +1,2027 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Intervento</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Report Intervento | TCE</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+:root{
+  --p:#6d28d9;
+  --pd:#5b21b6;
+  --ps:#f3e8ff;
+  --bg:#f6f7fb;
+  --b:#e5e7eb;
+  --t:#1f2937;
+  --m:#6b7280;
+  --ok:#15803d;
+}
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f7f5;
-            color: #1f2937;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
+*{
+  box-sizing:border-box;
+}
 
-        .container {
-            width: 100%;
-            max-width: 700px;
-            background: white;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--t);
+}
 
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+button,
+input,
+select{
+  font:inherit;
+}
 
-        .logo h1 {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
+button{
+  cursor:pointer;
+}
 
-        .logo p {
-            color: #6b7280;
-            font-size: 15px;
-        }
+.head{
+  background:var(--p);
+  color:#fff;
+  padding:18px 24px;
+}
 
-        .progress {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 35px;
-        }
+.headin,
+.wrap{
+  max-width:1180px;
+  margin:auto;
+}
 
-        .progress div {
-            height: 5px;
-            flex: 1;
-            background: #e5e7eb;
-            border-radius: 5px;
-        }
+.brand{
+  font-size:21px;
+  font-weight:800;
+}
 
-        .progress div.active {
-            background: #22c55e;
-        }
+.brand small{
+  display:block;
+  font-size:11px;
+  opacity:.8;
+}
 
-        .step {
-            display: none;
-        }
+.wrap{
+  padding:28px 18px 50px;
+}
 
-        .step.active {
-            display: block;
-        }
+.screen{
+  display:none;
+}
 
-        h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
+.screen.active{
+  display:block;
+}
 
-        .subtitle {
-            color: #6b7280;
-            margin-bottom: 25px;
-        }
+.hero,
+.card{
+  background:#fff;
+  border:1px solid var(--b);
+  border-radius:16px;
+  box-shadow:0 10px 30px #0000000d;
+}
 
-        .options {
-            display: grid;
-            gap: 15px;
-        }
+.hero{
+  text-align:center;
+  padding:36px;
+}
 
-        .option {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 22px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+.hero h1{
+  margin:0 0 8px;
+  font-size:30px;
+}
 
-        .option:hover {
-            border-color: #22c55e;
-            background: #f0fdf4;
-        }
+.hero p,
+.sub{
+  color:var(--m);
+}
 
-        .option.selected {
-            border-color: #22c55e;
-            background: #f0fdf4;
-        }
+.home{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+  max-width:700px;
+  margin:28px auto 0;
+}
 
-        .option-icon {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
+.big{
+  background:#fff;
+  border:2px solid var(--b);
+  border-radius:14px;
+  padding:22px;
+  text-align:left;
+}
 
-        .option-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
+.big:hover{
+  border-color:var(--p);
+  background:var(--ps);
+}
 
-        .option-description {
-            color: #6b7280;
-            margin-top: 5px;
-            font-size: 14px;
-        }
+.big strong{
+  display:block;
+  font-size:18px;
+  margin:8px 0;
+}
 
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            gap: 15px;
-        }
+.icon{
+  font-size:28px;
+}
 
-        button {
-            border: none;
-            border-radius: 10px;
-            padding: 13px 22px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
 
-        .btn-back {
-            background: #e5e7eb;
-            color: #374151;
-        }
+.top h1{
+  margin:0;
+  font-size:26px;
+}
 
-        .btn-next {
-            background: #22c55e;
-            color: white;
-            margin-left: auto;
-        }
+.card{
+  padding:24px;
+  margin-bottom:18px;
+}
 
-        .btn-next:hover {
-            background: #16a34a;
-        }
+.card h2{
+  margin:0 0 5px;
+  font-size:19px;
+}
 
-        @media (max-width: 600px) {
-            body {
-                padding: 15px;
-            }
+.sub{
+  font-size:13px;
+  margin-bottom:18px;
+}
 
-            .container {
-                padding: 25px;
-            }
-        }
-    </style>
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.field label{
+  font-weight:bold;
+  font-size:14px;
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+input,
+select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d1d5db;
+  border-radius:9px;
+  background:#fff;
+}
+
+input:focus,
+select:focus{
+  outline:2px solid #ddd6fe;
+  border-color:var(--p);
+}
+
+.hidden{
+  display:none!important;
+}
+
+.table{
+  overflow:auto;
+  border:1px solid var(--b);
+  border-radius:11px;
+}
+
+.work{
+  width:100%;
+  border-collapse:collapse;
+  min-width:760px;
+}
+
+.work th{
+  background:#f8fafc;
+  font-size:12px;
+  text-align:left;
+  padding:11px;
+  border-bottom:1px solid var(--b);
+}
+
+.work td{
+  padding:9px 11px;
+  border-bottom:1px solid var(--b);
+}
+
+.work tr:last-child td{
+  border:0;
+}
+
+.work input[type=checkbox]{
+  width:18px;
+  height:18px;
+  accent-color:var(--p);
+}
+
+.check{
+  text-align:center;
+  width:130px;
+}
+
+.note{
+  min-width:250px;
+}
+
+.actions{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.right{
+  display:flex;
+  gap:10px;
+  margin-left:auto;
+}
+
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:11px 17px;
+  font-weight:bold;
+}
+
+.primary{
+  background:var(--p);
+  color:#fff;
+}
+
+.primary:hover{
+  background:var(--pd);
+}
+
+.secondary{
+  background:#e5e7eb;
+}
+
+.light{
+  background:#fff;
+  border:1px solid var(--b);
+}
+
+.alert{
+  padding:12px 14px;
+  border-radius:9px;
+  margin-bottom:15px;
+  font-size:14px;
+}
+
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.success{
+  background:#dcfce7;
+  color:var(--ok);
+}
+
+.search{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.results{
+  display:grid;
+  gap:10px;
+}
+
+.result{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  border:1px solid var(--b);
+  border-radius:11px;
+  padding:15px;
+}
+
+.result span,
+.muted{
+  display:block;
+  color:var(--m);
+  font-size:13px;
+  margin-top:4px;
+}
+
+.version{
+  background:var(--ps);
+  color:var(--pd);
+  padding:5px 8px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:#0f172a73;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+
+.modal.open{
+  display:flex;
+}
+
+.modalbox{
+  background:#fff;
+  border-radius:15px;
+  padding:24px;
+  width:min(850px,100%);
+  max-height:90vh;
+  overflow:auto;
+}
+
+.modalhead{
+  display:flex;
+  justify-content:space-between;
+}
+
+.history{
+  display:grid;
+  gap:10px;
+}
+
+.hi{
+  border:1px solid var(--b);
+  border-radius:10px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.current{
+  background:#faf7ff;
+  border-color:#c4b5fd;
+}
+
+.empty{
+  text-align:center;
+  padding:25px;
+  color:var(--m);
+  border:1px dashed #cbd5e1;
+  border-radius:10px;
+}
+
+@media(max-width:700px){
+
+  .home,
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .top{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .right{
+    width:100%;
+    margin:0;
+  }
+
+  .right .btn{
+    flex:1;
+  }
+
+  .search{
+    flex-direction:column;
+  }
+
+  .result,
+  .hi{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
-
-    <div class="logo">
-        <h1>REPORT INTERVENTO</h1>
-        <p>Compila il rapporto relativo all'intervento effettuato</p>
+<header class="head">
+  <div class="headin">
+    <div class="brand">
+      TCE
+      <small>Report Intervento</small>
     </div>
+  </div>
+</header>
 
-    <div class="progress">
-        <div class="active"></div>
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
+<main class="wrap">
 
-    <!-- STEP 1 -->
-    <div class="step active" id="step1">
+<!-- HOME -->
 
-        <h2>Tipo di intervento</h2>
+<section id="home" class="screen active">
 
-        <p class="subtitle">
-            Seleziona il tipo di impianto sul quale è stato effettuato l'intervento.
-        </p>
+  <div class="hero">
 
-        <div class="options">
+    <h1>Report Intervento</h1>
 
-            <div class="option" onclick="selectOption(this, 'fotovoltaico')">
-                <div class="option-icon">☀️</div>
-                <div class="option-title">
-                    Impianto Fotovoltaico
-                </div>
-                <div class="option-description">
-                    Intervento su impianto fotovoltaico
-                </div>
-            </div>
+    <p>
+      Gestione digitale dei rapporti di intervento.
+    </p>
 
-            <div class="option" onclick="selectOption(this, 'climatizzazione')">
-                <div class="option-icon">❄️</div>
-                <div class="option-title">
-                    Impianto Climatizzazione
-                </div>
-                <div class="option-description">
-                    Intervento su impianto di climatizzazione
-                </div>
-            </div>
+    <div class="home">
 
-        </div>
+      <button class="big" onclick="newReport()">
 
-        <div class="buttons">
-            <button class="btn-next" onclick="nextStep()">
-                Avanti →
-            </button>
-        </div>
+        <div class="icon">＋</div>
+
+        <strong>NUOVO REPORT</strong>
+
+        <span class="muted">
+          Crea un nuovo rapporto di intervento.
+        </span>
+
+      </button>
+
+      <button class="big" onclick="searchScreen()">
+
+        <div class="icon">⌕</div>
+
+        <strong>CERCA REPORT</strong>
+
+        <span class="muted">
+          Cerca e modifica un rapporto già presente.
+        </span>
+
+      </button>
 
     </div>
 
-    <!-- STEP 2 -->
-    <div class="step" id="step2">
+  </div>
 
-        <h2>Dati dell'intervento</h2>
+</section>
 
-        <p class="subtitle">
-            Inserisci le informazioni principali.
-        </p>
 
-        <div>
-            <label>Cliente</label>
-            <input type="text" style="width:100%; padding:12px; margin:8px 0 18px;">
-            
-            <label>Indirizzo</label>
-            <input type="text" style="width:100%; padding:12px; margin:8px 0 18px;">
+<!-- FORM -->
 
-            <label>Data intervento</label>
-            <input type="date" style="width:100%; padding:12px; margin:8px 0 18px;">
-        </div>
+<section id="form" class="screen">
 
-        <div class="buttons">
-            <button class="btn-back" onclick="prevStep()">
-                ← Indietro
-            </button>
+  <div class="top">
 
-            <button class="btn-next" onclick="nextStep()">
-                Avanti →
-            </button>
-        </div>
+    <div>
+
+      <h1 id="title">
+        Nuovo report
+      </h1>
+
+      <p class="sub" id="subtitle">
+        Compila i dati dell'intervento.
+      </p>
 
     </div>
 
-    <!-- STEP 3 -->
-    <div class="step" id="step3">
+    <button class="btn light" onclick="home()">
+      ← Home
+    </button>
 
-        <h2>Descrizione intervento</h2>
+  </div>
 
-        <p class="subtitle">
-            Descrivi il problema riscontrato e il lavoro effettuato.
-        </p>
+  <div id="alertBox"></div>
 
-        <textarea
-            placeholder="Descrizione dell'intervento..."
-            style="width:100%; min-height:180px; padding:12px; resize:vertical;"
-        ></textarea>
 
-        <div class="buttons">
-            <button class="btn-back" onclick="prevStep()">
-                ← Indietro
-            </button>
+  <form onsubmit="event.preventDefault();save()">
 
-            <button class="btn-next" onclick="nextStep()">
-                Avanti →
-            </button>
+    <!-- DATI PRINCIPALI -->
+
+    <div class="card">
+
+      <h2>Dati principali</h2>
+
+      <p class="sub">
+        I campi con * sono obbligatori.
+      </p>
+
+      <div class="grid">
+
+        <div class="field">
+
+          <label>
+            Tipo di intervento *
+          </label>
+
+          <select
+            id="tipo"
+            required
+            onchange="typeChange()"
+          >
+
+            <option value="">
+              Seleziona...
+            </option>
+
+            <option>
+              Impianto Fotovoltaico
+            </option>
+
+            <option>
+              Impianto Climatizzazione
+            </option>
+
+          </select>
+
         </div>
+
+
+        <div class="field">
+
+          <label>
+            Cantiere *
+          </label>
+
+          <input
+            id="cantiere"
+            required
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Data intervento *
+          </label>
+
+          <input
+            id="data"
+            type="date"
+            required
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Installatore *
+          </label>
+
+          <select
+            id="installatore"
+            required
+            onchange="installerChange()"
+          >
+
+            <option value="">
+              Seleziona...
+            </option>
+
+            <option>Fagio</option>
+            <option>Brugno</option>
+            <option>Selman</option>
+            <option>Michele</option>
+            <option>Izmir</option>
+            <option>Dionis</option>
+            <option>Aldo</option>
+            <option>Altro</option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          id="altro"
+          class="field hidden"
+        >
+
+          <label>
+            Specificare installatore
+          </label>
+
+          <input
+            id="installatoreAltro"
+          >
+
+        </div>
+
+      </div>
 
     </div>
 
-    <!-- STEP 4 -->
-    <div class="step" id="step4">
 
-        <h2>Riepilogo</h2>
+    <!-- FOTOVOLTAICO -->
 
-        <p class="subtitle">
-            Controlla i dati prima di inviare il report.
-        </p>
+    <div
+      id="fv"
+      class="card hidden"
+    >
 
-        <div style="
-            background:#f3f4f6;
-            padding:20px;
-            border-radius:10px;
-        ">
-            Il riepilogo dell'intervento verrà mostrato qui.
-        </div>
+      <h2>
+        Impianto Fotovoltaico
+      </h2>
 
-        <div class="buttons">
-            <button class="btn-back" onclick="prevStep()">
-                ← Indietro
-            </button>
+      <p class="sub">
+        Consegna in cantiere, conclusione e note
+        per ogni lavorazione.
+      </p>
 
-            <button class="btn-next" onclick="alert('Report pronto per l\\'invio!')">
-                Invia report ✓
-            </button>
-        </div>
+      <div class="table">
+
+        <table class="work">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Lavorazione
+              </th>
+
+              <th class="check">
+                Consegna in Cantiere
+              </th>
+
+              <th class="check">
+                Concluso
+              </th>
+
+              <th>
+                Note
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="fvbody"></tbody>
+
+        </table>
+
+      </div>
 
     </div>
+
+
+    <!-- CLIMATIZZAZIONE -->
+
+    <div
+      id="cl"
+      class="card hidden"
+    >
+
+      <h2>
+        Impianto Climatizzazione
+      </h2>
+
+      <p class="sub">
+        Consegna in cantiere, conclusione e note
+        per ogni lavorazione.
+      </p>
+
+      <div class="table">
+
+        <table class="work">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Lavorazione
+              </th>
+
+              <th class="check">
+                Consegna in Cantiere
+              </th>
+
+              <th class="check">
+                Concluso
+              </th>
+
+              <th>
+                Note
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="clbody"></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+
+    <!-- PULSANTI -->
+
+    <div class="card">
+
+      <div class="actions">
+
+        <button
+          type="button"
+          class="btn secondary"
+          onclick="home()"
+        >
+          Annulla
+        </button>
+
+        <div class="right">
+
+          <button
+            type="button"
+            id="histbtn"
+            class="btn light hidden"
+            onclick="showHistory()"
+          >
+            Cronologia
+          </button>
+
+          <button
+            id="savebtn"
+            class="btn primary"
+          >
+            Salva report
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </form>
+
+</section>
+
+
+<!-- CERCA -->
+
+<section id="search" class="screen">
+
+  <div class="top">
+
+    <div>
+
+      <h1>
+        Cerca report
+      </h1>
+
+      <p class="sub">
+        Cerca per nome del cantiere.
+      </p>
+
+    </div>
+
+    <button
+      class="btn light"
+      onclick="home()"
+    >
+      ← Home
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="search">
+
+      <input
+        id="q"
+        placeholder="Nome del cantiere..."
+        onkeydown="if(event.key==='Enter'){event.preventDefault();findReports()}"
+      >
+
+      <button
+        class="btn primary"
+        onclick="findReports()"
+      >
+        Cerca
+      </button>
+
+    </div>
+
+
+    <div id="salert"></div>
+
+    <div id="results">
+
+      <div class="empty">
+        Inserisci il nome del cantiere e premi Cerca.
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- MODALE CRONOLOGIA -->
+
+<div
+  id="modal"
+  class="modal"
+  onclick="if(event.target===this)closeHistory()"
+>
+
+  <div class="modalbox">
+
+    <div class="modalhead">
+
+      <h2>
+        Cronologia
+        <span id="hid"></span>
+      </h2>
+
+      <button
+        class="btn light"
+        onclick="closeHistory()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div id="historybody"></div>
+
+  </div>
 
 </div>
 
+
 <script>
 
-let currentStep = 1;
-let selectedType = null;
+/*******************************************************
+ * COLLEGAMENTO DATABASE
+ *******************************************************/
 
-function selectOption(element, type) {
+const API =
+'https://script.google.com/macros/s/AKfycbxtPwsh63S4he2uoCpfpekJyxs0EXamOhc0uuM-Ki-gXCL3ffzBW8eE0fuUr4lKIFjd/exec';
 
-    document.querySelectorAll('.option').forEach(option => {
-        option.classList.remove('selected');
-    });
 
-    element.classList.add('selected');
+/*******************************************************
+ * LAVORAZIONI FOTOVOLTAICO
+ *******************************************************/
 
-    selectedType = type;
+const FV = [
+
+  ['Strutture','Strutture'],
+
+  ['Ottimizzatori','Ottimizzatori'],
+
+  ['Moduli Fotovoltaici','Moduli_Fotovoltaici'],
+
+  ['Cavi DC','Cavi_DC'],
+
+  ['Quadro DC','Quadro_DC'],
+
+  ['Inverter','Inverter'],
+
+  ['Sistema di Accumulo','Sistema_Accumulo'],
+
+  ['BMS','BMS'],
+
+  ['Quadro AC','Quadro_AC'],
+
+  ['Linea AC','Linea_AC'],
+
+  [
+    'Interruttore di Protezione Generale',
+    'Interruttore_Protezione_Generale'
+  ],
+
+  ['Meter','Meter'],
+
+  [
+    'Interfaccia di Protezione',
+    'Interfaccia_Protezione'
+  ],
+
+  ['Back-up','Back-up'],
+
+  [
+    'Fissaggio Colonnina',
+    'Fissaggio_Colonnina'
+  ],
+
+  [
+    'Quadro AC per Colonnina',
+    'Quadro_AC_Colonnina'
+  ],
+
+  [
+    'Meter / Comunicazione per Colonnina',
+    'Meter_Comunicazione_Colonnina'
+  ],
+
+  [
+    'Antennino Wi-Fi',
+    'Antennino_Wifi'
+  ],
+
+  [
+    'Cavi inverter-batteria',
+    'Cavi_Inverter_Batteria'
+  ],
+
+  ['Fusibili','Fusibili']
+
+];
+
+
+/*******************************************************
+ * LAVORAZIONI CLIMATIZZAZIONE
+ *******************************************************/
+
+const CL = [
+
+  ['Motore esterno','Motore_Esterno'],
+
+  ['Unità interna','Unita_Interna'],
+
+  ['Linee','Linee'],
+
+  ['Corrugati','Corrugati'],
+
+  ['Staffe/Piedini','Staffe_Piedini'],
+
+  ['Pennine Wi-Fi','Pennine_Wifi'],
+
+  ['Vuoto','Vuoto'],
+
+  ['Gas','Gas'],
+
+  ['Alimentazione','Alimentazione'],
+
+  ['Messa in funzione','Messa_in_Funzione']
+
+];
+
+
+/*******************************************************
+ * STATO DEL REPORT
+ *******************************************************/
+
+let id = null;
+let ver = null;
+
+
+/*******************************************************
+ * CREA LE RIGHE DELLE LAVORAZIONI
+ *******************************************************/
+
+function rows(arr,p){
+
+  return arr.map(function(x,i){
+
+    return `
+
+      <tr>
+
+        <td>
+          <b>${x[0]}</b>
+        </td>
+
+        <td class="check">
+
+          <input
+            type="checkbox"
+            id="${p}${i}c"
+          >
+
+        </td>
+
+        <td class="check">
+
+          <input
+            type="checkbox"
+            id="${p}${i}x"
+          >
+
+        </td>
+
+        <td>
+
+          <input
+            class="note"
+            id="${p}${i}n"
+            placeholder="Note..."
+          >
+
+        </td>
+
+      </tr>
+
+    `;
+
+  }).join('');
+
 }
 
-function showStep(step) {
 
-    document.querySelectorAll('.step').forEach(element => {
-        element.classList.remove('active');
-    });
+/*******************************************************
+ * INIZIALIZZAZIONE
+ *******************************************************/
 
-    document.getElementById('step' + step).classList.add('active');
+function init(){
 
-    document.querySelectorAll('.progress div').forEach((bar, index) => {
-        bar.classList.toggle('active', index < step);
-    });
+  document.getElementById('fvbody').innerHTML =
+    rows(FV,'f');
+
+  document.getElementById('clbody').innerHTML =
+    rows(CL,'c');
+
 }
 
-function nextStep() {
+init();
 
-    if (currentStep === 1 && !selectedType) {
-        alert('Seleziona prima il tipo di intervento.');
-        return;
-    }
 
-    if (currentStep < 4) {
-        currentStep++;
-        showStep(currentStep);
-    }
+/*******************************************************
+ * CAMBIO SCHERMATA
+ *******************************************************/
+
+function screen(x){
+
+  document
+    .querySelectorAll('.screen')
+    .forEach(function(s){
+
+      s.classList.remove('active');
+
+    });
+
+  document
+    .getElementById(x)
+    .classList.add('active');
+
+  window.scrollTo(0,0);
+
 }
 
-function prevStep() {
 
-    if (currentStep > 1) {
-        currentStep--;
-        showStep(currentStep);
+/*******************************************************
+ * HOME
+ *******************************************************/
+
+function home(){
+
+  id = null;
+  ver = null;
+
+  screen('home');
+
+}
+
+
+/*******************************************************
+ * NUOVO REPORT
+ *******************************************************/
+
+function newReport(){
+
+  id = null;
+  ver = null;
+
+  document
+    .querySelector('form')
+    .reset();
+
+  clearRows();
+
+  alertBox('');
+
+  document.getElementById('title').textContent =
+    'Nuovo report';
+
+  document.getElementById('subtitle').textContent =
+    "Compila i dati dell'intervento.";
+
+  document
+    .getElementById('histbtn')
+    .classList.add('hidden');
+
+  document.getElementById('savebtn').textContent =
+    'Salva report';
+
+  typeChange();
+
+  installerChange();
+
+  screen('form');
+
+}
+
+
+/*******************************************************
+ * CERCA REPORT
+ *******************************************************/
+
+function searchScreen(){
+
+  document.getElementById('q').value = '';
+
+  document.getElementById('results').innerHTML = `
+
+    <div class="empty">
+      Inserisci il nome del cantiere e premi Cerca.
+    </div>
+
+  `;
+
+  document.getElementById('salert').innerHTML = '';
+
+  screen('search');
+
+}
+
+
+/*******************************************************
+ * PULISCE LE RIGHE
+ *******************************************************/
+
+function clearRows(){
+
+  document
+    .querySelectorAll(
+      '#fvbody input,#clbody input'
+    )
+    .forEach(function(x){
+
+      if(x.type === 'checkbox'){
+
+        x.checked = false;
+
+      }else{
+
+        x.value = '';
+
+      }
+
+    });
+
+}
+
+
+/*******************************************************
+ * CAMBIO TIPO INTERVENTO
+ *******************************************************/
+
+function typeChange(){
+
+  const tipo =
+    document.getElementById('tipo').value;
+
+  document
+    .getElementById('fv')
+    .classList.toggle(
+      'hidden',
+      tipo !== 'Impianto Fotovoltaico'
+    );
+
+  document
+    .getElementById('cl')
+    .classList.toggle(
+      'hidden',
+      tipo !== 'Impianto Climatizzazione'
+    );
+
+}
+
+
+/*******************************************************
+ * CAMBIO INSTALLATORE
+ *******************************************************/
+
+function installerChange(){
+
+  const value =
+    document.getElementById('installatore').value;
+
+  document
+    .getElementById('altro')
+    .classList.toggle(
+      'hidden',
+      value !== 'Altro'
+    );
+
+}
+
+
+/*******************************************************
+ * MESSAGGI
+ *******************************************************/
+
+function alertBox(m,ok=false){
+
+  const box =
+    document.getElementById('alertBox');
+
+  if(!m){
+
+    box.innerHTML = '';
+
+    return;
+
+  }
+
+  box.innerHTML = `
+
+    <div class="alert ${ok ? 'success' : 'error'}">
+
+      ${esc(m)}
+
+    </div>
+
+  `;
+
+}
+
+
+/*******************************************************
+ * ESCAPE TESTO
+ *******************************************************/
+
+function esc(x){
+
+  return String(x ?? '')
+    .replace(
+      /[&<>'"]/g,
+      function(c){
+
+        return {
+
+          '&':'&amp;',
+          '<':'&lt;',
+          '>':'&gt;',
+          "'":'&#39;',
+          '"':'&quot;'
+
+        }[c];
+
+      }
+    );
+
+}
+
+
+/*******************************************************
+ * RACCOGLIE DATI DAL FORM
+ *******************************************************/
+
+function collect(){
+
+  const d = {
+
+    Cantiere:
+      document.getElementById('cantiere').value.trim(),
+
+    Data_Intervento:
+      document.getElementById('data').value,
+
+    Tipo_Intervento:
+      document.getElementById('tipo').value,
+
+    Installatore:
+      document.getElementById('installatore').value,
+
+    Installatore_Altro:
+      document
+        .getElementById('installatoreAltro')
+        .value
+        .trim()
+
+  };
+
+
+  const a =
+    d.Tipo_Intervento ===
+    'Impianto Fotovoltaico'
+      ? FV
+      : CL;
+
+
+  const p =
+    d.Tipo_Intervento ===
+    'Impianto Fotovoltaico'
+      ? 'f'
+      : 'c';
+
+
+  a.forEach(function(x,i){
+
+    d[x[1] + '_Consegna'] =
+      document
+        .getElementById(p+i+'c')
+        .checked
+        ? 'SI'
+        : '';
+
+    d[x[1] + '_Concluso'] =
+      document
+        .getElementById(p+i+'x')
+        .checked
+        ? 'SI'
+        : '';
+
+    d[x[1] + '_Note'] =
+      document
+        .getElementById(p+i+'n')
+        .value
+        .trim();
+
+  });
+
+
+  return d;
+
+}
+
+
+/*******************************************************
+ * CARICA DATI NEL FORM
+ *******************************************************/
+
+function fill(d){
+
+  document.getElementById('cantiere').value =
+    d.Cantiere || '';
+
+  document.getElementById('data').value =
+    normDate(d.Data_Intervento);
+
+  document.getElementById('tipo').value =
+    d.Tipo_Intervento || '';
+
+  document.getElementById('installatore').value =
+    d.Installatore || '';
+
+  document.getElementById('installatoreAltro').value =
+    d.Installatore_Altro || '';
+
+  typeChange();
+
+  installerChange();
+
+  clearRows();
+
+
+  const a =
+    d.Tipo_Intervento ===
+    'Impianto Fotovoltaico'
+      ? FV
+      : CL;
+
+
+  const p =
+    d.Tipo_Intervento ===
+    'Impianto Fotovoltaico'
+      ? 'f'
+      : 'c';
+
+
+  a.forEach(function(x,i){
+
+    document
+      .getElementById(p+i+'c')
+      .checked =
+        String(
+          d[x[1]+'_Consegna'] || ''
+        ).toUpperCase() === 'SI';
+
+
+    document
+      .getElementById(p+i+'x')
+      .checked =
+        String(
+          d[x[1]+'_Concluso'] || ''
+        ).toUpperCase() === 'SI';
+
+
+    document
+      .getElementById(p+i+'n')
+      .value =
+        d[x[1]+'_Note'] || '';
+
+  });
+
+}
+
+
+/*******************************************************
+ * NORMALIZZA DATA
+ *******************************************************/
+
+function normDate(v){
+
+  if(!v){
+    return '';
+  }
+
+  v = String(v);
+
+  if(
+    /^\d{4}-\d{2}-\d{2}$/.test(v)
+  ){
+
+    return v;
+
+  }
+
+
+  const m =
+    v.match(
+      /(\d{2})\/(\d{2})\/(\d{4})/
+    );
+
+
+  return m
+    ? m[3]+'-'+m[2]+'-'+m[1]
+    : '';
+
+}
+
+
+/*******************************************************
+ * GET
+ *******************************************************/
+
+async function get(p){
+
+  const r =
+    await fetch(
+      API + '?' +
+      new URLSearchParams(p),
+      {
+        redirect:'follow'
+      }
+    );
+
+  return r.json();
+
+}
+
+
+/*******************************************************
+ * POST
+ *******************************************************/
+
+async function post(x){
+
+  const r =
+    await fetch(
+      API,
+      {
+        method:'POST',
+
+        headers:{
+          'Content-Type':
+            'text/plain;charset=utf-8'
+        },
+
+        body:
+          JSON.stringify(x),
+
+        redirect:'follow'
+      }
+    );
+
+  return r.json();
+
+}
+
+
+/*******************************************************
+ * SALVA REPORT
+ *******************************************************/
+
+async function save(){
+
+  alertBox('');
+
+  const d = collect();
+
+
+  if(
+    !d.Tipo_Intervento ||
+    !d.Cantiere ||
+    !d.Data_Intervento ||
+    !d.Installatore
+  ){
+
+    alertBox(
+      'Compila tutti i campi obbligatori.'
+    );
+
+    return;
+
+  }
+
+
+  if(
+    d.Installatore === 'Altro' &&
+    !d.Installatore_Altro
+  ){
+
+    alertBox(
+      "Selezionando 'Altro' devi specificare l'installatore."
+    );
+
+    return;
+
+  }
+
+
+  const saveButton =
+    document.getElementById('savebtn');
+
+  saveButton.disabled = true;
+
+  saveButton.textContent =
+    'Salvataggio...';
+
+
+  try{
+
+    let r;
+
+
+    if(id){
+
+      r =
+        await post({
+          action:'update',
+          id:id,
+          data:d
+        });
+
+    }else{
+
+      r =
+        await post({
+          action:'create',
+          data:d
+        });
+
     }
+
+
+    if(!r.success){
+
+      throw new Error(
+        r.error ||
+        'Errore di salvataggio.'
+      );
+
+    }
+
+
+    id = r.id;
+
+    ver =
+      Number(r.versione);
+
+
+    document.getElementById('title').textContent =
+      'Report ' + id;
+
+    document.getElementById('subtitle').textContent =
+      'Versione ' + ver;
+
+
+    document
+      .getElementById('histbtn')
+      .classList.remove('hidden');
+
+
+    saveButton.textContent =
+      'Salva nuova versione';
+
+
+    alertBox(
+      `Report ${id} salvato correttamente come versione ${ver}.`,
+      true
+    );
+
+
+  }catch(e){
+
+    alertBox(
+      e.message ||
+      'Errore di comunicazione con il database.'
+    );
+
+
+  }finally{
+
+    saveButton.disabled = false;
+
+    if(
+      saveButton.textContent ===
+      'Salvataggio...'
+    ){
+
+      saveButton.textContent =
+        id
+          ? 'Salva nuova versione'
+          : 'Salva report';
+
+    }
+
+  }
+
+}
+
+
+/*******************************************************
+ * CERCA REPORT
+ *******************************************************/
+
+async function findReports(){
+
+  const results =
+    document.getElementById('results');
+
+  const searchAlert =
+    document.getElementById('salert');
+
+
+  results.innerHTML = `
+
+    <div class="empty">
+      Ricerca in corso...
+    </div>
+
+  `;
+
+  searchAlert.innerHTML = '';
+
+
+  try{
+
+    const r =
+      await get({
+
+        action:'search',
+
+        cantiere:
+          document
+            .getElementById('q')
+            .value
+            .trim()
+
+      });
+
+
+    if(!r.success){
+
+      throw new Error(
+        r.error
+      );
+
+    }
+
+
+    if(!r.reports.length){
+
+      results.innerHTML = `
+
+        <div class="empty">
+          Nessun report trovato.
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    results.innerHTML =
+      r.reports.map(function(x){
+
+        return `
+
+          <div class="result">
+
+            <div>
+
+              <b>
+                ${esc(x.Cantiere)}
+              </b>
+
+              <span>
+                ${esc(x.ID_Report)}
+                ·
+                ${esc(x.Data_Intervento)}
+                ·
+                ${esc(x.Installatore)}
+                ·
+                ${esc(x.Tipo_Intervento)}
+              </span>
+
+            </div>
+
+
+            <div>
+
+              <span class="version">
+                V${esc(x.Versione)}
+              </span>
+
+              <button
+                class="btn primary"
+                onclick="openReport('${String(x.ID_Report).replace(/'/g,"\\'")}')"
+              >
+                Apri
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join('');
+
+
+  }catch(e){
+
+    results.innerHTML = '';
+
+    searchAlert.innerHTML = `
+
+      <div class="alert error">
+        ${esc(e.message)}
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/*******************************************************
+ * APRE REPORT
+ *******************************************************/
+
+async function openReport(reportId){
+
+  screen('form');
+
+  document.getElementById('title').textContent =
+    'Caricamento...';
+
+  document
+    .getElementById('histbtn')
+    .classList.add('hidden');
+
+  const saveButton =
+    document.getElementById('savebtn');
+
+  saveButton.disabled = true;
+
+
+  try{
+
+    const r =
+      await get({
+
+        action:'get',
+
+        id:reportId
+
+      });
+
+
+    if(!r.success){
+
+      throw new Error(
+        r.error
+      );
+
+    }
+
+
+    id =
+      reportId;
+
+    ver =
+      Number(r.report.Versione) || 1;
+
+
+    fill(r.report);
+
+
+    document.getElementById('title').textContent =
+      'Report ' + reportId;
+
+
+    document.getElementById('subtitle').textContent =
+      'Versione ' + ver;
+
+
+    document
+      .getElementById('histbtn')
+      .classList.remove('hidden');
+
+
+    saveButton.textContent =
+      'Salva nuova versione';
+
+
+  }catch(e){
+
+    alertBox(
+      e.message ||
+      'Errore nel caricamento del report.'
+    );
+
+
+  }finally{
+
+    saveButton.disabled = false;
+
+  }
+
+}
+
+
+/*******************************************************
+ * CRONOLOGIA
+ *******************************************************/
+
+async function showHistory(){
+
+  if(!id){
+    return;
+  }
+
+
+  const modal =
+    document.getElementById('modal');
+
+  const body =
+    document.getElementById('historybody');
+
+
+  modal.classList.add('open');
+
+
+  document.getElementById('hid').textContent =
+    id;
+
+
+  body.innerHTML = `
+
+    <div class="empty">
+      Caricamento...
+    </div>
+
+  `;
+
+
+  try{
+
+    const r =
+      await get({
+
+        action:'history',
+
+        id:id
+
+      });
+
+
+    if(!r.success){
+
+      throw new Error(
+        r.error
+      );
+
+    }
+
+
+    body.innerHTML = `
+
+      <div class="history">
+
+        ${
+          r.history.map(function(x){
+
+            return `
+
+              <div
+                class="hi ${
+                  Number(x.Versione) === ver
+                    ? 'current'
+                    : ''
+                }"
+              >
+
+                <div>
+
+                  <b>
+                    Versione ${esc(x.Versione)}
+                  </b>
+
+                  <span class="muted">
+
+                    ${esc(
+                      x.Data_Ora_Modifica ||
+                      x.Data_Ora_Creazione ||
+                      ''
+                    )}
+
+                    ·
+
+                    ${esc(
+                      x.Cantiere || ''
+                    )}
+
+                  </span>
+
+                </div>
+
+
+                <span class="version">
+
+                  ${
+                    Number(x.Versione) === ver
+                      ? 'VERSIONE ATTUALE'
+                      : 'SOLO VISUALIZZAZIONE'
+                  }
+
+                </span>
+
+              </div>
+
+            `;
+
+          }).join('')
+        }
+
+      </div>
+
+      <p class="muted">
+
+        Le versioni precedenti sono consultabili
+        ma non possono essere ripristinate.
+
+      </p>
+
+    `;
+
+
+  }catch(e){
+
+    body.innerHTML = `
+
+      <div class="alert error">
+        ${esc(e.message)}
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/*******************************************************
+ * CHIUDE CRONOLOGIA
+ *******************************************************/
+
+function closeHistory(){
+
+  document
+    .getElementById('modal')
+    .classList.remove('open');
+
 }
 
 </script>
