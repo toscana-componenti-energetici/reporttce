@@ -1128,6 +1128,89 @@ if (document.readyState === 'loading') {
     home();
   }
 
+  // Populate lavorazioni rows for fv and cl so they are visible on desktop and mobile
+  function populateLavorazioni(){
+    const fvList = [
+      'Montaggio moduli',
+      'Cablaggio stringhe',
+      'Collegamento inverter',
+      'Test elettrico',
+      'Messa in servizio'
+    ];
+
+    const clList = [
+      'Installazione unità interna',
+      'Installazione unità esterna',
+      'Collegamenti frigoriferi',
+      'Prova perdite',
+      'Avvio impianto'
+    ];
+
+    function buildRows(list, bodyId, prefix){
+      const body = document.getElementById(bodyId);
+      if(!body) return;
+      body.innerHTML = '';
+      list.forEach((name, idx)=>{
+        const tr = document.createElement('tr');
+
+        // Lavorazione cell
+        const tdName = document.createElement('td');
+        tdName.textContent = name;
+        tr.appendChild(tdName);
+
+        // Consegna cell
+        const tdConsegna = document.createElement('td');
+        tdConsegna.className = 'check';
+        tdConsegna.setAttribute('data-label','Consegna in Cantiere');
+        const chkConsegna = document.createElement('input');
+        chkConsegna.type = 'checkbox';
+        chkConsegna.name = prefix + '_consegna_' + idx;
+        tdConsegna.appendChild(chkConsegna);
+        tr.appendChild(tdConsegna);
+
+        // Concluso cell
+        const tdConcluso = document.createElement('td');
+        tdConcluso.className = 'check';
+        tdConcluso.setAttribute('data-label','Concluso');
+        const chkConcluso = document.createElement('input');
+        chkConcluso.type = 'checkbox';
+        chkConcluso.name = prefix + '_concluso_' + idx;
+        tdConcluso.appendChild(chkConcluso);
+        tr.appendChild(tdConcluso);
+
+        // Note cell
+        const tdNote = document.createElement('td');
+        tdNote.className = 'note';
+        tdNote.setAttribute('data-label','Note');
+        const inputNote = document.createElement('input');
+        inputNote.type = 'text';
+        inputNote.name = prefix + '_note_' + idx;
+        inputNote.placeholder = 'Note...';
+        tdNote.appendChild(inputNote);
+        tr.appendChild(tdNote);
+
+        body.appendChild(tr);
+      });
+    }
+
+    buildRows(fvList, 'fvbody', 'fv');
+    buildRows(clList, 'clbody', 'cl');
+  }
+
+  // Ensure lavorazioni are populated on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', populateLavorazioni);
+  } else {
+    populateLavorazioni();
+  }
+
+  // keep typeChange in sync after populating rows
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ if(typeof typeChange==='function') typeChange(); });
+  } else {
+    if(typeof typeChange==='function') typeChange();
+  }
+
   // allow Enter to submit the form with our save
   document.addEventListener('keydown', function(e){
     if(e.key==='Enter'){
