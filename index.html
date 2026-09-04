@@ -969,6 +969,7 @@ select:focus{
   class="modal"
   onclick="if(event.target===this)closeHistory()"
 >
+
   <div class="modalbox">
 
     <div class="modalhead">
@@ -997,229 +998,352 @@ select:focus{
 
 <script>
 
-// Mostra/nasconde il campo "Altro" e gestisce il valore della checkbox prima del salvataggio
-function initInstallatori() {
-  const list = document.getElementById('installatoriList');
-  const otherField = document.getElementById('altro');
-  const otherInput = document.getElementById('installatoreAltro');
-  const form = document.querySelector('form');
 
-  if (!list || !otherField || !otherInput || !form) return;
 
-  function updateOther() {
-    const otherCheckbox = list.querySelector('input[type="checkbox"][value="Altro"]');
-    if (otherCheckbox && otherCheckbox.checked) {
-      otherField.classList.remove('hidden');
-      otherInput.required = true;
-      // metti il focus per migliore UX
-      otherInput.focus();
-    } else {
-      otherField.classList.add('hidden');
-      otherInput.required = false;
-      // pulisci il valore quando non serve
-      otherInput.value = '';
-    }
-  }
+/*******************************************************
+ * COLLEGAMENTO DATABASE
+ * API Google Apps Script
+ *******************************************************/
 
-  // quando cambia qualsiasi checkbox nella lista, aggiorna lo stato
-  list.addEventListener('change', updateOther);
+const API = 'https://script.google.com/macros/s/AKfycbyAe_Vcz9u_3Hn0uC997-Lw2lGj0EVvw2rre09mDcO00lJLD3YAJdirz9BiZlcxCp_T/exec';
 
-  // funzione che sostituisce il valore della checkbox "Altro" col testo inserito prima del salvataggio
-  function prepareInstallatori() {
-    const otherCheckbox = list.querySelector('input[type="checkbox"][value="Altro"]');
-    if (otherCheckbox && otherCheckbox.checked) {
-      const v = otherInput.value.trim();
-      // se è vuoto lascia "Altro" come fallback
-      otherCheckbox.value = v || 'Altro';
-    }
-  }
 
-  // sovrascrivi l'onsubmit del form per assicurare che prepareInstallatori() venga eseguita
-  form.onsubmit = function(e) {
-    e.preventDefault();
-    prepareInstallatori();
-    // chiama la funzione save() esistente se definita
-    if (typeof save === 'function') save();
-  };
+/*******************************************************
+ * LAVORAZIONI FOTOVOLTAICO
+ *******************************************************/
 
-  // stato iniziale
-  updateOther();
+const FV = [
+
+  ['Strutture','Strutture'],
+
+  ['Ottimizzatori','Ottimizzatori'],
+
+  ['Moduli Fotovoltaici','Moduli_Fotovoltaici'],
+
+  ['Cavi DC','Cavi_DC'],
+
+  ['Quadro DC','Quadro_DC'],
+
+  ['Inverter','Inverter'],
+
+  ['Sistema di Accumulo','Sistema_Accumulo'],
+
+  ['BMS','BMS'],
+
+  ['Quadro AC','Quadro_AC'],
+
+  ['Linea AC','Linea_AC'],
+
+  [
+    'Interruttore di Protezione Generale',
+    'Interruttore_Protezione_Generale'
+  ],
+
+  ['Meter','Meter'],
+
+  [
+    'Interfaccia di Protezione',
+    'Interfaccia_Protezione'
+  ],
+
+  ['Back-up','Back-up'],
+
+  [
+    'Fissaggio Colonnina',
+    'Fissaggio_Colonnina'
+  ],
+
+  [
+    'Quadro AC per Colonnina',
+    'Quadro_AC_Colonnina'
+  ],
+
+  [
+    'Meter / Comunicazione per Colonnina',
+    'Meter_Comunicazione_Colonnina'
+  ],
+
+  [
+    'Antennino Wi-Fi',
+    'Antennino_Wifi'
+  ],
+
+  [
+    'Cavi inverter-batteria',
+    'Cavi_Inverter_Batteria'
+  ],
+
+  ['Fusibili','Fusibili']
+
+];
+
+
+ /*******************************************************
+ * LAVORAZIONI CLIMATIZZAZIONE
+ *******************************************************/
+
+const CL = [
+
+  ['Motore esterno','Motore_Esterno'],
+
+  ['Unità interna','Unita_Interna'],
+
+  ['Linee','Linee'],
+
+  ['Corrugati','Corrugati'],
+
+  ['Staffe/Piedini','Staffe_Piedini'],
+
+  ['Pennine Wi-Fi','Pennine_Wifi'],
+
+  ['Vuoto','Vuoto'],
+
+  ['Gas','Gas'],
+
+  ['Alimentazione','Alimentazione'],
+
+  ['Messa in funzione','Messa_in_Funzione']
+
+];
+
+/*******************************************************
+ * FUNZIONI
+ *******************************************************/
+
+function newReport() {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('form').classList.add('active');
+  document.getElementById('title').textContent = 'Nuovo report';
+  document.getElementById('subtitle').textContent = 'Compila i dati dell\'intervento.';
+  document.getElementById('tipo').value = '';
+  document.getElementById('cantiere').value = '';
+  document.getElementById('data').value = '';
+  document.querySelectorAll('.checkbox-list input').forEach(el => el.checked = false);
+  typeChange();
 }
 
-// Inizializza dopo il caricamento della pagina
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initInstallatori);
-} else {
-  initInstallatori();
+function home() {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('home').classList.add('active');
+  clearAlert();
 }
 
-</script>
+function searchScreen() {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('search').classList.add('active');
+}
 
-<!-- Restore basic UI functions so buttons work even without the full original script -->
-<script>
-  function showScreen(id){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    const el = document.getElementById(id);
-    if(el) el.classList.add('active');
+function typeChange() {
+  const tipo = document.getElementById('tipo').value;
+  document.getElementById('fv').classList.toggle('hidden', tipo !== 'Impianto Fotovoltaico');
+  document.getElementById('cl').classList.toggle('hidden', tipo !== 'Impianto Climatizzazione');
+  
+  if (tipo === 'Impianto Fotovoltaico') {
+    loadTable('fv', FV);
+  } else if (tipo === 'Impianto Climatizzazione') {
+    loadTable('cl', CL);
   }
+}
 
-  function newReport(){
-    showScreen('form');
-    const t = document.getElementById('title');
-    if(t) t.textContent='Nuovo report';
-    const st = document.getElementById('subtitle');
-    if(st) st.textContent="Compila i dati dell'intervento.";
-  }
-
-  function searchScreen(){
-    showScreen('search');
-  }
-
-  function home(){
-    showScreen('home');
-  }
-
-  function typeChange(){
-    const tipo = document.getElementById('tipo');
-    const v = tipo ? tipo.value : '';
-    const fv = document.getElementById('fv');
-    const cl = document.getElementById('cl');
-    if(fv) fv.classList.toggle('hidden', v.indexOf('Fotovoltaico')===-1);
-    if(cl) cl.classList.toggle('hidden', v.indexOf('Climatizzazione')===-1);
-  }
-
-  function findReports(){
-    const q = (document.getElementById('q')||{value:''}).value.trim();
-    const results = document.getElementById('results');
-    if(!results) return;
-    results.innerHTML = '<div class="empty">Ricerca non implementata in questa demo. Hai cercato: '+(q||'<vuoto>')+'</div>';
-  }
-
-  function findAllReports(){
-    const results = document.getElementById('results');
-    if(!results) return;
-    results.innerHTML = '<div class="empty">Nessun report disponibile (demo)</div>';
-  }
-
-  function showHistory(){
-    const modal = document.getElementById('modal');
-    if(modal) modal.classList.add('open');
-  }
-
-  function closeHistory(){
-    const modal = document.getElementById('modal');
-    if(modal) modal.classList.remove('open');
-  }
-
-  function save(){
-    // prepare Altro value if present
-    const list = document.getElementById('installatoriList');
-    if(list){
-      const otherCheckbox = list.querySelector('input[type="checkbox"][name="installatore"][value="Altro"]');
-      const otherInput = document.getElementById('installatoreAltro');
-      if(otherCheckbox && otherCheckbox.checked && otherInput){
-        otherCheckbox.value = otherInput.value.trim() || 'Altro';
-      }
-    }
-
-    // collect selected (for demo we'll just alert)
-    const selected = Array.from(document.querySelectorAll('input[name="installatore"]:checked')).map(i=>i.value);
-    alert('Report salvato (demo). Installatori selezionati: ' + (selected.join(', ')||'<nessuno>'));
-    home();
-  }
-
-  // Populate lavorazioni rows for fv and cl so they are visible on desktop and mobile
-  function populateLavorazioni(){
-    const fvList = [
-      'Montaggio moduli',
-      'Cablaggio stringhe',
-      'Collegamento inverter',
-      'Test elettrico',
-      'Messa in servizio'
-    ];
-
-    const clList = [
-      'Installazione unità interna',
-      'Installazione unità esterna',
-      'Collegamenti frigoriferi',
-      'Prova perdite',
-      'Avvio impianto'
-    ];
-
-    function buildRows(list, bodyId, prefix){
-      const body = document.getElementById(bodyId);
-      if(!body) return;
-      body.innerHTML = '';
-      list.forEach((name, idx)=>{
-        const tr = document.createElement('tr');
-
-        // Lavorazione cell
-        const tdName = document.createElement('td');
-        tdName.textContent = name;
-        tr.appendChild(tdName);
-
-        // Consegna cell
-        const tdConsegna = document.createElement('td');
-        tdConsegna.className = 'check';
-        tdConsegna.setAttribute('data-label','Consegna in Cantiere');
-        const chkConsegna = document.createElement('input');
-        chkConsegna.type = 'checkbox';
-        chkConsegna.name = prefix + '_consegna_' + idx;
-        tdConsegna.appendChild(chkConsegna);
-        tr.appendChild(tdConsegna);
-
-        // Concluso cell
-        const tdConcluso = document.createElement('td');
-        tdConcluso.className = 'check';
-        tdConcluso.setAttribute('data-label','Concluso');
-        const chkConcluso = document.createElement('input');
-        chkConcluso.type = 'checkbox';
-        chkConcluso.name = prefix + '_concluso_' + idx;
-        tdConcluso.appendChild(chkConcluso);
-        tr.appendChild(tdConcluso);
-
-        // Note cell
-        const tdNote = document.createElement('td');
-        tdNote.className = 'note';
-        tdNote.setAttribute('data-label','Note');
-        const inputNote = document.createElement('input');
-        inputNote.type = 'text';
-        inputNote.name = prefix + '_note_' + idx;
-        inputNote.placeholder = 'Note...';
-        tdNote.appendChild(inputNote);
-        tr.appendChild(tdNote);
-
-        body.appendChild(tr);
-      });
-    }
-
-    buildRows(fvList, 'fvbody', 'fv');
-    buildRows(clList, 'clbody', 'cl');
-  }
-
-  // Ensure lavorazioni are populated on load
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', populateLavorazioni);
-  } else {
-    populateLavorazioni();
-  }
-
-  // keep typeChange in sync after populating rows
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){ if(typeof typeChange==='function') typeChange(); });
-  } else {
-    if(typeof typeChange==='function') typeChange();
-  }
-
-  // allow Enter to submit the form with our save
-  document.addEventListener('keydown', function(e){
-    if(e.key==='Enter'){
-      const active = document.activeElement;
-      if(active && (active.tagName==='INPUT' || active.tagName==='SELECT')){
-        // don't interfere with other inputs in this simplified demo
-      }
-    }
+function loadTable(id, data) {
+  const body = document.getElementById(id + 'body');
+  body.innerHTML = '';
+  data.forEach(item => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item[0]}</td>
+      <td class="check" data-label="Consegna"><input type="checkbox" name="${item[1]}_consegna"></td>
+      <td class="check" data-label="Concluso"><input type="checkbox" name="${item[1]}_concluso"></td>
+      <td class="note" data-label="Note"><input type="text" name="${item[1]}_note" placeholder="Note..."></td>
+    `;
+    body.appendChild(tr);
   });
+}
+
+function save() {
+  const tipo = document.getElementById('tipo').value;
+  const cantiere = document.getElementById('cantiere').value;
+  const data = document.getElementById('data').value;
+  
+  const installatori = Array.from(document.querySelectorAll('.checkbox-list input:checked'))
+    .map(el => el.value);
+  
+  if (!tipo || !cantiere || !data || installatori.length === 0) {
+    showAlert('Compila tutti i campi obbligatori', 'error');
+    return;
+  }
+  
+  const reportData = {
+    tipo,
+    cantiere,
+    data,
+    installatori: installatori.join(', ')
+  };
+  
+  if (tipo === 'Impianto Fotovoltaico') {
+    reportData.lavorazioni = collectTableData('fv');
+  } else {
+    reportData.lavorazioni = collectTableData('cl');
+  }
+  
+  sendToAPI(reportData);
+}
+
+function collectTableData(id) {
+  const data = {};
+  document.querySelectorAll(`#${id}body tr`).forEach(tr => {
+    const cells = tr.querySelectorAll('input');
+    const lavorazione = tr.querySelector('td').textContent.trim();
+    data[lavorazione] = {
+      consegna: cells[0].checked,
+      concluso: cells[1].checked,
+      note: cells[2].value
+    };
+  });
+  return data;
+}
+function sendToAPI(data) {
+  showAlert('Salvataggio in corso...', 'success');
+  
+  fetch(API, {
+    method: 'POST',
+    mode: 'no-cors', 
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(() => {
+    showAlert('✅ Report salvato con successo!', 'success');
+    setTimeout(home, 2000);
+  })
+  .catch(err => {
+    console.log(err);
+    showAlert('❌ Errore di connessione: ' + err.message, 'error');
+  });
+}
+function showAlert(msg, type) {
+  const box = document.getElementById('alertBox');
+  box.innerHTML = `<div class="alert ${type}">${msg}</div>`;
+}
+
+function clearAlert() {
+  document.getElementById('alertBox').innerHTML = '';
+}
+
+function findReports() {
+  const q = document.getElementById('q').value.trim();
+  if (!q) {
+    showSearchAlert('Inserisci il nome del cantiere', 'error');
+    return;
+  }
+  fetchReports({ cantiere: q });
+}
+
+function findAllReports() {
+  fetchReports({});
+}
+
+function fetchReports(filter) {
+  showSearchAlert('Ricerca in corso...', 'success');
+  
+  let url = API + '?action=search';
+  if (filter && filter.cantiere) {
+    url += '&cantiere=' + encodeURIComponent(filter.cantiere);
+  }
+  
+  fetch(url, {
+    method: 'GET'
+  })
+  .then(r => r.json())
+  .then(results => {
+    displayResults(results);
+  })
+  .catch(err => {
+    showSearchAlert('❌ Errore nel caricamento: ' + err.message, 'error');
+  });
+}
+function displayResults(results) {
+  const container = document.getElementById('results');
+  if (!results || results.length === 0) {
+    container.innerHTML = '<div class="empty">Nessun report trovato.</div>';
+    return;
+  }
+  
+  container.innerHTML = results.map(r => `
+    <div class="result">
+      <div>
+        <strong>${r.cantiere}</strong>
+        <span>${r.data}</span>
+        <span>${r.tipo}</span>
+      </div>
+      <button class="btn light" onclick="loadReport('${r.id}')">Modifica</button>
+    </div>
+  `).join('');
+}
+
+function loadReport(id) {
+  fetch(API + '?action=get&id=' + id)
+  .then(r => r.json())
+  .then(report => {
+    document.getElementById('tipo').value = report.tipo;
+    document.getElementById('cantiere').value = report.cantiere;
+    document.getElementById('data').value = report.data;
+    
+    document.querySelectorAll('.checkbox-list input').forEach(el => {
+      el.checked = report.installatori.includes(el.value);
+    });
+    
+    typeChange();
+    
+    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+    document.getElementById('form').classList.add('active');
+    document.getElementById('title').textContent = 'Modifica report';
+    document.getElementById('subtitle').textContent = 'Aggiorna i dati dell\'intervento.';
+    document.getElementById('histbtn').classList.remove('hidden');
+  })
+  .catch(err => {
+    showSearchAlert('❌ Errore nel caricamento del report: ' + err.message, 'error');
+  });
+}
+
+function showHistory(id) {
+  const modal = document.getElementById('modal');
+  modal.classList.add('open');
+  
+  fetch(API + '?action=history&id=' + id)
+  .then(r => r.json())
+  .then(history => {
+    const body = document.getElementById('historybody');
+    if (!history || history.length === 0) {
+      body.innerHTML = '<div class="empty">Nessuna cronologia disponibile</div>';
+      return;
+    }
+    body.innerHTML = history.map((h, i) => `
+      <div class="hi ${i === 0 ? 'current' : ''}">
+        <div>
+          <strong>${h.data}</strong>
+          <span class="muted">${h.ora}</span>
+        </div>
+        <span class="version">${h.versione}</span>
+      </div>
+    `).join('');
+  })
+  .catch(err => {
+    const body = document.getElementById('historybody');
+    body.innerHTML = '<div class="empty">Errore nel caricamento della cronologia</div>';
+  });
+}
+
+function closeHistory() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function showSearchAlert(msg, type) {
+  const box = document.getElementById('salert');
+  box.innerHTML = `<div class="alert ${type}">${msg}</div>`;
+}
+
 </script>
 
 </body>
