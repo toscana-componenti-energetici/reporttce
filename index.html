@@ -146,7 +146,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #ddd6fe;border-color:v
 
     <div id="alertBox"></div>
 
-    <form onsubmit="event.preventDefault();save()">
+    <form id="reportForm" onsubmit="event.preventDefault();save()">
       <div class="card">
         <h2>Dati principali</h2>
         <p class="sub">I campi con * sono obbligatori.</p>
@@ -294,6 +294,45 @@ const works = {
   ]
 };
 
+const STORAGE_KEY = 'reporttce_reports';
+let currentReportId = null;
+
+function getReports() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error('Errore lettura database locale:', error);
+    return [];
+  }
+}
+
+function saveReports(reports) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+}
+
+function getCurrentWorkRows(tipo) {
+  const typeKey = tipo === 'Impianto Fotovoltaico' ? 'fv' : 'cl';
+  const tbody = document.getElementById(typeKey + 'body');
+  if (!tbody) return {};
+
+  const rows = {};
+  tbody.querySelectorAll('tr').forEach((tr) => {
+    const name = tr.children[0].textContent.trim();
+    const cantiereCheck = tr.querySelector('input[type="checkbox"]');
+    const conclusoCheck = tr.querySelectorAll('input[type="checkbox"]')[1];
+    const note = tr.querySelector('textarea');
+    rows[name] = {
+      cantiere: !!(cantiereCheck && cantiereCheck.checked),
+      concluso: !!(conclusoCheck && conclusoCheck.checked),
+      note: note ? note.value.trim() : ''
+    };
+  });
+  return rows;
+}
+
 function home() {
   document.getElementById('home').classList.add('active');
   document.getElementById('form').classList.remove('active');
@@ -301,13 +340,14 @@ function home() {
 }
 
 function newReport() {
+  currentReportId = null;
   document.getElementById('title').textContent = 'Nuovo report';
   document.getElementById('subtitle').textContent = 'Compila i dati dell\'intervento.';
   document.getElementById('home').classList.remove('active');
   document.getElementById('search').classList.remove('active');
   document.getElementById('form').classList.add('active');
   document.getElementById('alertBox').innerHTML = '';
-  document.getElementById('form').reset();
+  document.getElementById('reportForm').reset();
   document.querySelectorAll('input[name="installatore"]').forEach(cb => cb.checked = false);
   document.getElementById('installatoreAltro').value = '';
   document.getElementById('altro').classList.add('hidden');
@@ -398,6 +438,49 @@ function showAlert(type, message) {
   box.textContent = message;
 }
 
+function populateFormFromReport(report) {
+  currentReportId = report.id;
+  document.getElementById('title').textContent = 'Modifica report';
+  document.getElementById('subtitle').textContent = 'Aggiorna i dati dell\'intervento.';
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('search').classList.remove('active');
+  document.getElementById('form').classList.add('active');
+  document.getElementById('alertBox').innerHTML = '';
+
+  document.getElementById('tipo').value = report.tipo;
+  document.getElementById('cantiere').value = report.cantiere || '';
+  document.getElementById('data').value = report.data || '';
+
+  document.querySelectorAll('input[name="installatore"]').forEach((cb) => {
+    cb.checked = (report.installatori || []).includes(cb.value);
+  });
+
+  const hasAltro = (report.installatori || []).includes('Altro');
+  const altroBox = document.getElementById('altro');
+  const altroInput = document.getElementById('installatoreAltro');
+  altroBox.classList.toggle('hidden', !hasAltro);
+  altroInput.value = hasAltro ? (report.installatoreAltro || '') : '';
+
+  typeChange();
+
+  const selectedType = report.tipo;
+  const rows = report.works || {};
+  const tbody = selectedType === 'Impianto Fotovoltaico' ? document.getElementById('fvbody') : document.getElementById('clbody');
+
+  if (tbody) {
+    tbody.querySelectorAll('tr').forEach((tr) => {
+      const name = tr.children[0].textContent.trim();
+      const rowInfo = rows[name] || {};
+      const cantiereInput = tr.querySelectorAll('input[type="checkbox"]')[0];
+      const conclusoInput = tr.querySelectorAll('input[type="checkbox"]')[1];
+      const noteInput = tr.querySelector('textarea');
+      if (cantiereInput) cantiereInput.checked = !!rowInfo.cantiere;
+      if (conclusoInput) conclusoInput.checked = !!rowInfo.concluso;
+      if (noteInput) noteInput.value = rowInfo.note || '';
+    });
+  }
+}
+
 function save() {
   const tipo = document.getElementById('tipo').value;
   const cantiere = document.getElementById('cantiere').value.trim();
@@ -420,15 +503,78 @@ function save() {
     return;
   }
 
+  const report = {
+    id: currentReportId || Date.now(),
+    tipo,
+    cantiere,
+    data,
+    installatori: selectedInstallers,
+    installatoreAltro: selectedInstallers.includes('Altro') ? altro : '',
+    works: getCurrentWorkRows(tipo),
+    updatedAt: new Date().toISOString()
+  };
+
+  const reports = getReports();
+  const idx = reports.findIndex(item => item.id === report.id);
+
+  if (idx >= 0) {
+    reports[idx] = { ...reports[idx], ...report };
+  } else {
+    reports.push(report);
+  }
+
+  saveReports(reports);
   showAlert('success', 'Report salvato correttamente.');
+  findAllReports();
+}
+
+function renderReportResults(reports) {
+  const results = document.getElementById('results');
+
+  if (!reports.length) {
+    results.innerHTML = '<div class="empty">Nessun report trovato.</div>';
+    return;
+  }
+
+  results.innerHTML = reports.map((report) => `
+    <div class="result">
+      <div>
+        <strong>${report.cantiere}</strong>
+        <span>Tipo: ${report.tipo}</span>
+        <span>Data: ${report.data}</span>
+        <span>Installatori: ${(report.installatori || []).join(', ')}</span>
+      </div>
+      <div class="right">
+        <button class="btn light" onclick="populateFormFromReport(${report.id})">Modifica</button>
+      </div>
+    </div>
+  `).join('');
 }
 
 function findAllReports() {
-  document.getElementById('results').innerHTML = '<div class="empty">Nessun report trovato.</div>';
+  const reports = getReports().sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+  renderReportResults(reports);
 }
 
 function findReports() {
-  document.getElementById('results').innerHTML = '<div class="empty">Nessun report trovato.</div>';
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const reports = getReports().filter(report => {
+    const cantiere = (report.cantiere || '').toLowerCase();
+    return cantiere.includes(q);
+  }).sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+
+  if (!q) {
+    findAllReports();
+    return;
+  }
+
+  if (!reports.length) {
+    document.getElementById('salert').innerHTML = '<div class="alert error">Nessun report trovato per la ricerca inserita.</div>';
+  } else {
+    document.getElementById('salert').innerHTML = '';
+  }
+
+  renderReportResults(reports);
 }
 
 function showHistory() {
