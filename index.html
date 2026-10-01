@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Report Intervento | TCE</title>
-
 <style>
 :root{
   --p:#6d28d9;
@@ -17,1334 +16,429 @@
   --ok:#15803d;
 }
 
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:var(--t);
-}
-
-button,
-input,
-select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-.head{
-  background:var(--p);
-  color:#fff;
-  padding:18px 24px;
-}
-
-.headin,
-.wrap{
-  max-width:1180px;
-  margin:auto;
-}
-
-.brand{
-  font-size:21px;
-  font-weight:800;
-}
-
-.brand small{
-  display:block;
-  font-size:11px;
-  opacity:.8;
-}
-
-.wrap{
-  padding:28px 18px 50px;
-}
-
-.screen{
-  display:none;
-}
-
-.screen.active{
-  display:block;
-}
-
-.hero,
-.card{
-  background:#fff;
-  border:1px solid var(--b);
-  border-radius:16px;
-  box-shadow:0 10px 30px #0000000d;
-}
-
-.hero{
-  text-align:center;
-  padding:36px;
-}
-
-.hero h1{
-  margin:0 0 8px;
-  font-size:30px;
-}
-
-.hero p,
-.sub{
-  color:var(--m);
-}
-
-.home{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
-  max-width:700px;
-  margin:28px auto 0;
-}
-
-.big{
-  background:#fff;
-  border:2px solid var(--b);
-  border-radius:14px;
-  padding:22px;
-  text-align:left;
-}
-
-.big:hover{
-  border-color:var(--p);
-  background:var(--ps);
-}
-
-.big strong{
-  display:block;
-  font-size:18px;
-  margin:8px 0;
-}
-
-.icon{
-  font-size:28px;
-}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
-}
-
-.top h1{
-  margin:0;
-  font-size:26px;
-}
-
-.card{
-  padding:24px;
-  margin-bottom:18px;
-}
-
-.card h2{
-  margin:0 0 5px;
-  font-size:19px;
-}
-
-.sub{
-  font-size:13px;
-  margin-bottom:18px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:18px;
-}
-
-.field{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-}
-
-.field label{
-  font-weight:bold;
-  font-size:14px;
-}
-
-.full{
-  grid-column:1/-1;
-}
-
-input,
-select{
-  width:100%;
-  padding:11px 12px;
-  border:1px solid #d1d5db;
-  border-radius:9px;
-  background:#fff;
-}
-
-input:focus,
-select:focus{
-  outline:2px solid #ddd6fe;
-  border-color:var(--p);
-}
-
-.hidden{
-  display:none!important;
-}
-
-.table{
-  overflow:visible;
-  border:none;
-  border-radius:0;
-}
-
-.work{
-  width:100%;
-  border-collapse:collapse;
-  min-width:auto;
-}
-
-.work th{
-  background:#f8fafc;
-  font-size:12px;
-  text-align:left;
-  padding:11px;
-  border-bottom:1px solid var(--b);
-}
-
-.work td{
-  padding:9px 11px;
-  border-bottom:1px solid var(--b);
-}
-
-.work tr:last-child td{
-  border:0;
-}
-
-.work input[type=checkbox]{
-  width:18px;
-  height:18px;
-  accent-color:var(--p);
-}
-
-.check{
-  text-align:center;
-  width:130px;
-}
-
-.note{
-  min-width:250px;
-}
-
-.actions{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.right{
-  display:flex;
-  gap:10px;
-  margin-left:auto;
-}
-
-.btn{
-  border:0;
-  border-radius:9px;
-  padding:11px 17px;
-  font-weight:bold;
-}
-
-.primary{
-  background:var(--p);
-  color:#fff;
-}
-
-.primary:hover{
-  background:var(--pd);
-}
-
-.secondary{
-  background:#e5e7eb;
-}
-
-.light{
-  background:#fff;
-  border:1px solid var(--b);
-}
-
-.alert{
-  padding:12px 14px;
-  border-radius:9px;
-  margin-bottom:15px;
-  font-size:14px;
-}
-
-.error{
-  background:#fee2e2;
-  color:#991b1b;
-}
-
-.success{
-  background:#dcfce7;
-  color:var(--ok);
-}
-
-.search{
-  display:flex;
-  gap:10px;
-  margin-bottom:18px;
-}
-
-.results{
-  display:grid;
-  gap:10px;
-}
-
-.result{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  border:1px solid var(--b);
-  border-radius:11px;
-  padding:15px;
-}
-
-.result span,
-.muted{
-  display:block;
-  color:var(--m);
-  font-size:13px;
-  margin-top:4px;
-}
-
-.version{
-  background:var(--ps);
-  color:var(--pd);
-  padding:5px 8px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:bold;
-}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:#0f172a73;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-}
-
-.modal.open{
-  display:flex;
-}
-
-.modalbox{
-  background:#fff;
-  border-radius:15px;
-  padding:24px;
-  width:min(850px,100%);
-  max-height:90vh;
-  overflow:auto;
-}
-
-.modalhead{
-  display:flex;
-  justify-content:space-between;
-}
-
-.history{
-  display:grid;
-  gap:10px;
-}
-
-.hi{
-  border:1px solid var(--b);
-  border-radius:10px;
-  padding:14px;
-  display:flex;
-  justify-content:space-between;
-}
-
-.current{
-  background:#faf7ff;
-  border-color:#c4b5fd;
-}
-
-.empty{
-  text-align:center;
-  padding:25px;
-  color:var(--m);
-  border:1px dashed #cbd5e1;
-  border-radius:10px;
-}
-
-.checkbox-list {
-  display:grid;
-  grid-template-columns:1fr;
-  gap:8px;
-}
-
-.checkbox-list label {
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:8px;
-  border-radius:6px;
-  transition:background-color 0.2s;
-}
-
-.checkbox-list label:hover {
-  background-color:#f3f4f6;
-}
-
-.checkbox-list input[type="checkbox"] {
-  width:18px;
-  height:18px;
-  margin:0;
-  flex-shrink:0;
-  accent-color:var(--p);
-  cursor:pointer;
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+
+.head{background:var(--p);color:#fff;padding:18px 24px}
+.headin,.wrap{max-width:1180px;margin:auto}
+.brand{font-size:21px;font-weight:800}
+.brand small{display:block;font-size:11px;opacity:.8}
+.wrap{padding:28px 18px 50px}
+.screen{display:none}.screen.active{display:block}
+.hero,.card{background:#fff;border:1px solid var(--b);border-radius:16px;box-shadow:0 10px 30px #0000000d}
+.hero{text-align:center;padding:36px}
+.hero h1{margin:0 0 8px;font-size:30px}
+.hero p,.sub{color:var(--m)}
+.home{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:700px;margin:28px auto 0}
+.big{background:#fff;border:2px solid var(--b);border-radius:14px;padding:22px;text-align:left}
+.big:hover{border-color:var(--p);background:var(--ps)}
+.big strong{display:block;font-size:18px;margin:8px 0}
+.icon{font-size:28px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.top h1{margin:0;font-size:26px}
+.card{padding:24px;margin-bottom:18px}
+.card h2{margin:0 0 5px;font-size:19px}
+.sub{font-size:13px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-weight:bold;font-size:14px}
+.full{grid-column:1/-1}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #d1d5db;border-radius:9px;background:#fff}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid #ddd6fe;border-color:var(--p)}
+.hidden{display:none!important}
+
+.table{overflow:visible;border:none;border-radius:0}
+.work{width:100%;border-collapse:collapse;min-width:auto}
+.work th{background:#f8fafc;font-size:12px;text-align:left;padding:11px;border-bottom:1px solid var(--b)}
+.work td{padding:9px 11px;border-bottom:1px solid var(--b);vertical-align:top}
+.work tr:last-child td{border:0}
+.work input[type=checkbox]{width:18px;height:18px;accent-color:var(--p)}
+.check{text-align:center;width:130px}
+.note{min-width:300px;width:100%}
+.actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.right{display:flex;gap:10px;margin-left:auto}
+.btn{border:0;border-radius:9px;padding:11px 17px;font-weight:bold}
+.primary{background:var(--p);color:#fff}.primary:hover{background:var(--pd)}
+.secondary{background:#e5e7eb}.light{background:#fff;border:1px solid var(--b)}
+.alert{padding:12px 14px;border-radius:9px;margin-bottom:15px;font-size:14px}
+.error{background:#fee2e2;color:#991b1b}.success{background:#dcfce7;color:var(--ok)}
+.search{display:flex;gap:10px;margin-bottom:18px}
+.results{display:grid;gap:10px}
+.result{display:flex;justify-content:space-between;align-items:center;gap:15px;border:1px solid var(--b);border-radius:11px;padding:15px}
+.result span,.muted{display:block;color:var(--m);font-size:13px;margin-top:4px}
+.version{background:var(--ps);color:var(--pd);padding:5px 8px;border-radius:20px;font-size:12px;font-weight:bold}
+.modal{position:fixed;inset:0;background:#0f172a73;display:none;align-items:center;justify-content:center;padding:18px}
+.modal.open{display:flex}
+.modalbox{background:#fff;border-radius:15px;padding:24px;width:min(850px,100%);max-height:90vh;overflow:auto}
+.modalhead{display:flex;justify-content:space-between}
+.history{display:grid;gap:10px}
+.hi{border:1px solid var(--b);border-radius:10px;padding:14px;display:flex;justify-content:space-between}
+.current{background:#faf7ff;border-color:#c4b5fd}
+.empty{text-align:center;padding:25px;color:var(--m);border:1px dashed #cbd5e1;border-radius:10px}
+.checkbox-list{display:grid;grid-template-columns:1fr;gap:8px}
+.checkbox-list label{cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;transition:background-color .2s}
+.checkbox-list label:hover{background-color:#f3f4f6}
+.checkbox-list input[type="checkbox"]{width:18px;height:18px;margin:0;flex-shrink:0;accent-color:var(--p);cursor:pointer}
 
 @media(max-width:700px){
-
-  .home,
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .top{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .right{
-    width:100%;
-    margin:0;
-  }
-
-  .right .btn{
-    flex:1;
-  }
-
-  .search{
-    flex-direction:column;
-  }
-
-  .result,
-  .hi{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .checkbox-list {
-    grid-template-columns:1fr;
-  }
-
-  .checkbox-list label {
-    padding:10px;
-    font-size:15px;
-  }
-
-  /* Tabella mobile - card layout */
-  .work {
-    display:block;
-    border-collapse:separate;
-    border-spacing:0;
-  }
-
-  .work thead {
-    display:none;
-  }
-
-  .work tbody {
-    display:grid;
-    grid-template-columns:1fr;
-    gap:12px;
-  }
-
-  .work tr {
-    display:grid;
-    grid-template-columns:1fr;
-    border:1px solid var(--b);
-    border-radius:8px;
-    overflow:hidden;
-  }
-
-  .work td {
-    border:none;
-    border-bottom:1px solid var(--b);
-    padding:12px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-
-  .work td:last-child {
-    border-bottom:none;
-  }
-
-  .work td:first-child {
-    background:#f9fafb;
-    font-weight:bold;
-    padding:14px 12px;
-  }
-
-  .work td.check::before {
-    content:attr(data-label);
-    font-weight:500;
-    font-size:12px;
-    color:var(--m);
-  }
-
-  .work td.note::before {
-    content:attr(data-label);
-    font-weight:500;
-    font-size:12px;
-    color:var(--m);
-  }
-
-  .work input {
-    width:auto;
-    margin:0;
-  }
-
-  .work input[type="checkbox"] {
-    width:18px;
-    height:18px;
-  }
-
-  .work input[type="text"] {
-    width:auto;
-    max-width:150px;
-  }
-
+  .home,.grid{grid-template-columns:1fr}
+  .top{align-items:flex-start;flex-direction:column}
+  .right{width:100%;margin:0}
+  .right .btn{flex:1}
+  .search{flex-direction:column}
+  .result,.hi{align-items:flex-start;flex-direction:column}
+  .checkbox-list{grid-template-columns:1fr}
+  .checkbox-list label{padding:10px;font-size:15px}
+  .work{display:block;border-collapse:separate;border-spacing:0}
+  .work thead{display:none}
+  .work tbody{display:grid;grid-template-columns:1fr;gap:12px}
+  .work tr{display:grid;grid-template-columns:1fr;border:1px solid var(--b);border-radius:8px;overflow:hidden}
+  .work td{border:none;border-bottom:1px solid var(--b);padding:12px;display:flex;justify-content:space-between;align-items:center}
+  .work td:last-child{border-bottom:none}
+  .work td:first-child{background:#f9fafb;font-weight:bold;padding:14px 12px}
+  .work td.check::before{content:attr(data-label);font-weight:500;font-size:12px;color:var(--m)}
+  .work td.note::before{content:attr(data-label);font-weight:500;font-size:12px;color:var(--m)}
+  .work input,.work textarea{width:auto;margin:0}
+  .work input[type="checkbox"]{width:18px;height:18px}
+  .work textarea{width:100%;min-width:0;max-width:100%}
 }
-
-@media(min-width:701px){
-  .checkbox-list {
-    grid-template-columns:repeat(2,1fr);
-  }
-}
+@media(min-width:701px){.checkbox-list{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
-
 <body>
-
 <header class="head">
   <div class="headin">
-    <div class="brand">
-      TCE
-      <small>Report Intervento</small>
-    </div>
+    <div class="brand">TCE<small>Report Intervento</small></div>
   </div>
 </header>
 
 <main class="wrap">
+  <section id="home" class="screen active">
+    <div class="hero">
+      <h1>Report Intervento</h1>
+      <p>Gestione digitale dei rapporti di intervento.</p>
+      <div class="home">
+        <button class="big" onclick="newReport()">
+          <div class="icon">＋</div>
+          <strong>NUOVO REPORT</strong>
+          <span class="muted">Crea un nuovo rapporto di intervento.</span>
+        </button>
+        <button class="big" onclick="searchScreen()">
+          <div class="icon">⌕</div>
+          <strong>CERCA REPORT</strong>
+          <span class="muted">Cerca e modifica un rapporto già presente.</span>
+        </button>
+      </div>
+    </div>
+  </section>
 
-<!-- HOME -->
-
-<section id="home" class="screen active">
-
-  <div class="hero">
-
-    <h1>Report Intervento</h1>
-
-    <p>
-      Gestione digitale dei rapporti di intervento.
-    </p>
-
-    <div class="home">
-
-      <button class="big" onclick="newReport()">
-
-        <div class="icon">＋</div>
-
-        <strong>NUOVO REPORT</strong>
-
-        <span class="muted">
-          Crea un nuovo rapporto di intervento.
-        </span>
-
-      </button>
-
-      <button class="big" onclick="searchScreen()">
-
-        <div class="icon">⌕</div>
-
-        <strong>CERCA REPORT</strong>
-
-        <span class="muted">
-          Cerca e modifica un rapporto già presente.
-        </span>
-
-      </button>
-
+  <section id="form" class="screen">
+    <div class="top">
+      <div>
+        <h1 id="title">Nuovo report</h1>
+        <p class="sub" id="subtitle">Compila i dati dell'intervento.</p>
+      </div>
+      <button class="btn light" onclick="home()">← Home</button>
     </div>
 
-  </div>
+    <div id="alertBox"></div>
 
-</section>
+    <form onsubmit="event.preventDefault();save()">
+      <div class="card">
+        <h2>Dati principali</h2>
+        <p class="sub">I campi con * sono obbligatori.</p>
 
-
-<!-- FORM -->
-
-<section id="form" class="screen">
-
-  <div class="top">
-
-    <div>
-
-      <h1 id="title">
-        Nuovo report
-      </h1>
-
-      <p class="sub" id="subtitle">
-        Compila i dati dell'intervento.
-      </p>
-
-    </div>
-
-    <button class="btn light" onclick="home()">
-      ← Home
-    </button>
-
-  </div>
-
-  <div id="alertBox"></div>
-
-
-  <form onsubmit="event.preventDefault();save()">
-
-    <!-- DATI PRINCIPALI -->
-
-    <div class="card">
-
-      <h2>Dati principali</h2>
-
-      <p class="sub">
-        I campi con * sono obbligatori.
-      </p>
-
-      <div class="grid">
-
-        <div class="field">
-
-          <label>
-            Tipo di intervento *
-          </label>
-
-          <select
-            id="tipo"
-            required
-            onchange="typeChange()"
-          >
-
-            <option value="">
-              Seleziona...
-            </option>
-
-            <option>
-              Impianto Fotovoltaico
-            </option>
-
-            <option>
-              Impianto Climatizzazione
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="field">
-
-          <label>
-            Cantiere *
-          </label>
-
-          <input
-            id="cantiere"
-            required
-          >
-
-        </div>
-
-
-        <div class="field">
-
-          <label>
-            Data intervento *
-          </label>
-
-          <input
-            id="data"
-            type="date"
-            required
-          >
-
-        </div>
-
-
-        <!-- INSTALLATORI: checkbox list -->
-        <div class="field full" id="installatoriField">
-
-          <label>
-            Installatore (seleziona uno o più) *
-          </label>
-
-          <div id="installatoriList" class="checkbox-list" role="group" aria-labelledby="installatoriLabel">
-
-            <label><input type="checkbox" name="installatore" value="Fagio"> Fagio</label>
-            <label><input type="checkbox" name="installatore" value="Brugno"> Brugno</label>
-            <label><input type="checkbox" name="installatore" value="Selman"> Selman</label>
-            <label><input type="checkbox" name="installatore" value="Michele"> Michele</label>
-            <label><input type="checkbox" name="installatore" value="Izmir"> Izmir</label>
-            <label><input type="checkbox" name="installatore" value="Dionis"> Dionis</label>
-            <label><input type="checkbox" name="installatore" value="Aldo"> Aldo</label>
-            <label><input type="checkbox" name="installatore" value="Altro"> Altro</label>
-
+        <div class="grid">
+          <div class="field">
+            <label>Tipo di intervento *</label>
+            <select id="tipo" required onchange="typeChange()">
+              <option value="">Seleziona...</option>
+              <option>Impianto Fotovoltaico</option>
+              <option>Impianto Climatizzazione</option>
+            </select>
           </div>
 
+          <div class="field">
+            <label>Cantiere *</label>
+            <input id="cantiere" required>
+          </div>
+
+          <div class="field">
+            <label>Data intervento *</label>
+            <input id="data" type="date" required>
+          </div>
+
+          <div class="field full" id="installatoriField">
+            <label>Installatore (seleziona uno o più) *</label>
+            <div id="installatoriList" class="checkbox-list" role="group" aria-labelledby="installatoriLabel">
+              <label><input type="checkbox" name="installatore" value="Fagio"> Fagio</label>
+              <label><input type="checkbox" name="installatore" value="Brugno"> Brugno</label>
+              <label><input type="checkbox" name="installatore" value="Selman"> Selman</label>
+              <label><input type="checkbox" name="installatore" value="Michele"> Michele</label>
+              <label><input type="checkbox" name="installatore" value="Izmir"> Izmir</label>
+              <label><input type="checkbox" name="installatore" value="Dionis"> Dionis</label>
+              <label><input type="checkbox" name="installatore" value="Aldo"> Aldo</label>
+              <label><input type="checkbox" name="installatore" value="Altro"> Altro</label>
+            </div>
+          </div>
+
+          <div id="altro" class="field hidden">
+            <label>Specificare installatore (Altro)</label>
+            <input id="installatoreAltro" placeholder="Nome installatore alternativo...">
+          </div>
         </div>
+      </div>
 
-
-        <div
-          id="altro"
-          class="field hidden"
-        >
-
-          <label>
-            Specificare installatore (Altro)
-          </label>
-
-          <input
-            id="installatoreAltro"
-            placeholder="Nome installatore alternativo..."
-          >
-
+      <div id="fv" class="card hidden">
+        <h2>Impianto Fotovoltaico</h2>
+        <p class="sub">Consegna in cantiere, conclusione e note per ogni lavorazione.</p>
+        <div class="table">
+          <table class="work">
+            <thead>
+              <tr>
+                <th>Lavorazione</th>
+                <th class="check">Consegna in Cantiere</th>
+                <th class="check">Concluso</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="fvbody"></tbody>
+          </table>
         </div>
-
       </div>
 
-    </div>
-
-
-    <!-- FOTOVOLTAICO -->
-
-    <div
-      id="fv"
-      class="card hidden"
-    >
-
-      <h2>
-        Impianto Fotovoltaico
-      </h2>
-
-      <p class="sub">
-        Consegna in cantiere, conclusione e note
-        per ogni lavorazione.
-      </p>
-
-      <div class="table">
-
-        <table class="work">
-
-          <thead>
-
-            <tr>
-
-              <th>
-                Lavorazione
-              </th>
-
-              <th class="check">
-                Consegna in Cantiere
-              </th>
-
-              <th class="check">
-                Concluso
-              </th>
-
-              <th>
-                Note
-              </th>
-
-            </tr>
-
-          </thead>
-
-          <tbody id="fvbody"></tbody>
-
-        </table>
-
+      <div id="cl" class="card hidden">
+        <h2>Impianto Climatizzazione</h2>
+        <p class="sub">Consegna in cantiere, conclusione e note per ogni lavorazione.</p>
+        <div class="table">
+          <table class="work">
+            <thead>
+              <tr>
+                <th>Lavorazione</th>
+                <th class="check">Consegna in Cantiere</th>
+                <th class="check">Concluso</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="clbody"></tbody>
+          </table>
+        </div>
       </div>
 
-    </div>
-
-
-    <!-- CLIMATIZZAZIONE -->
-
-    <div
-      id="cl"
-      class="card hidden"
-    >
-
-      <h2>
-        Impianto Climatizzazione
-      </h2>
-
-      <p class="sub">
-        Consegna in cantiere, conclusione e note
-        per ogni lavorazione.
-      </p>
-
-      <div class="table">
-
-        <table class="work">
-
-          <thead>
-
-            <tr>
-
-              <th>
-                Lavorazione
-              </th>
-
-              <th class="check">
-                Consegna in Cantiere
-              </th>
-
-              <th class="check">
-                Concluso
-              </th>
-
-              <th>
-                Note
-              </th>
-
-            </tr>
-
-          </thead>
-
-          <tbody id="clbody"></tbody>
-
-        </table>
-
+      <div class="card">
+        <div class="actions">
+          <button type="button" class="btn secondary" onclick="home()">Annulla</button>
+          <div class="right">
+            <button type="button" id="histbtn" class="btn light hidden" onclick="showHistory()" aria-label="Mostra cronologia">Cronologia</button>
+            <button id="savebtn" class="btn primary">Salva report</button>
+          </div>
+        </div>
       </div>
+    </form>
+  </section>
 
+  <section id="search" class="screen">
+    <div class="top">
+      <div>
+        <h1>Cerca report</h1>
+        <p class="sub">Cerca per nome del cantiere o visualizza tutti.</p>
+      </div>
+      <button class="btn light" onclick="home()">← Home</button>
     </div>
-
-
-    <!-- PULSANTI -->
 
     <div class="card">
-
-      <div class="actions">
-
-        <button
-          type="button"
-          class="btn secondary"
-          onclick="home()"
-        >
-          Annulla
-        </button>
-
-        <div class="right">
-
-          <button
-            type="button"
-            id="histbtn"
-            class="btn light hidden"
-            onclick="showHistory()"
-            aria-label="Mostra cronologia"
-          >
-            Cronologia
-          </button>
-
-
-          <button
-            id="savebtn"
-            class="btn primary"
-          >
-            Salva report
-          </button>
-
-        </div>
-
+      <div class="search">
+        <input id="q" placeholder="Nome del cantiere..." onkeydown="if(event.key==='Enter'){event.preventDefault();findReports()}">
+        <button class="btn primary" onclick="findReports()">Cerca</button>
+        <button class="btn light" onclick="findAllReports()" title="Mostra tutti i report">Mostra tutti</button>
       </div>
 
-    </div>
-
-  </form>
-
-</section>
-
-
-<!-- CERCA -->
-
-<section id="search" class="screen">
-
-  <div class="top">
-
-    <div>
-
-      <h1>
-        Cerca report
-      </h1>
-
-      <p class="sub">
-        Cerca per nome del cantiere o visualizza tutti.
-      </p>
-
-    </div>
-
-    <button
-      class="btn light"
-      onclick="home()"
-    >
-      ← Home
-    </button>
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="search">
-
-      <input
-        id="q"
-        placeholder="Nome del cantiere..."
-        onkeydown="if(event.key==='Enter'){event.preventDefault();findReports()}"
-      >
-
-      <button
-        class="btn primary"
-        onclick="findReports()"
-      >
-        Cerca
-      </button>
-
-      <button
-        class="btn light"
-        onclick="findAllReports()"
-        title="Mostra tutti i report"
-      >
-        Mostra tutti
-      </button>
-
-    </div>
-
-
-    <div id="salert"></div>
-
-    <div id="results">
-
-      <div class="empty">
-        Inserisci il nome del cantiere e premi Cerca oppure premi Mostra tutti.
+      <div id="salert"></div>
+      <div id="results">
+        <div class="empty">Inserisci il nome del cantiere e premi Cerca oppure premi Mostra tutti.</div>
       </div>
-
     </div>
-
-  </div>
-
-</section>
-
+  </section>
 </main>
 
-
-<!-- MODALE CRONOLOGIA -->
-
-<div
-  id="modal"
-  class="modal"
-  onclick="if(event.target===this)closeHistory()"
->
-
+<div id="modal" class="modal" onclick="if(event.target===this)closeHistory()">
   <div class="modalbox">
-
     <div class="modalhead">
-
-      <h2>
-        Cronologia
-        <span id="hid"></span>
-      </h2>
-
-      <button
-        class="btn light"
-        onclick="closeHistory()"
-        aria-label="Chiudi cronologia"
-      >
-        ✕
-      </button>
-
+      <h2>Cronologia <span id="hid"></span></h2>
+      <button class="btn light" onclick="closeHistory()" aria-label="Chiudi cronologia">✕</button>
     </div>
-
     <div id="historybody"></div>
-
   </div>
-
 </div>
 
-
 <script>
-
-
-
-/*******************************************************
- * COLLEGAMENTO DATABASE
- * API Google Apps Script
- *******************************************************/
-
-const API = 'https://script.google.com/macros/s/AKfycbyAe_Vcz9u_3Hn0uC997-Lw2lGj0EVvw2rre09mDcO00lJLD3YAJdirz9BiZlcxCp_T/exec';
-
-
-/*******************************************************
- * LAVORAZIONI FOTOVOLTAICO
- *******************************************************/
-
-const FV = [
-
-  ['Strutture','Strutture'],
-
-  ['Ottimizzatori','Ottimizzatori'],
-
-  ['Moduli Fotovoltaici','Moduli_Fotovoltaici'],
-
-  ['Cavi DC','Cavi_DC'],
-
-  ['Quadro DC','Quadro_DC'],
-
-  ['Inverter','Inverter'],
-
-  ['Sistema di Accumulo','Sistema_Accumulo'],
-
-  ['BMS','BMS'],
-
-  ['Quadro AC','Quadro_AC'],
-
-  ['Linea AC','Linea_AC'],
-
-  [
-    'Interruttore di Protezione Generale',
-    'Interruttore_Protezione_Generale'
+const works = {
+  fv: [
+    'Pannelli',
+    'Struttura',
+    'Inverter',
+    'Cablaggi',
+    'Collegamenti',
+    'Verifica finale'
   ],
+  cl: [
+    'Unità interna',
+    'Unità esterna',
+    'Tubazioni',
+    'Cablaggi',
+    'Scarichi',
+    'Verifica finale'
+  ]
+};
 
-  ['Meter','Meter'],
-
-  [
-    'Interfaccia di Protezione',
-    'Interfaccia_Protezione'
-  ],
-
-  ['Back-up','Back-up'],
-
-  [
-    'Fissaggio Colonnina',
-    'Fissaggio_Colonnina'
-  ],
-
-  [
-    'Quadro AC per Colonnina',
-    'Quadro_AC_Colonnina'
-  ],
-
-  [
-    'Meter / Comunicazione per Colonnina',
-    'Meter_Comunicazione_Colonnina'
-  ],
-
-  [
-    'Antennino Wi-Fi',
-    'Antennino_Wifi'
-  ],
-
-  [
-    'Cavi inverter-batteria',
-    'Cavi_Inverter_Batteria'
-  ],
-
-  ['Fusibili','Fusibili']
-
-];
-
-
- /*******************************************************
- * LAVORAZIONI CLIMATIZZAZIONE
- *******************************************************/
-
-const CL = [
-
-  ['Motore esterno','Motore_Esterno'],
-
-  ['Unità interna','Unita_Interna'],
-
-  ['Linee','Linee'],
-
-  ['Corrugati','Corrugati'],
-
-  ['Staffe/Piedini','Staffe_Piedini'],
-
-  ['Pennine Wi-Fi','Pennine_Wifi'],
-
-  ['Vuoto','Vuoto'],
-
-  ['Gas','Gas'],
-
-  ['Alimentazione','Alimentazione'],
-
-  ['Messa in funzione','Messa_in_Funzione']
-
-];
-
-/*******************************************************
- * FUNZIONI
- *******************************************************/
+function home() {
+  document.getElementById('home').classList.add('active');
+  document.getElementById('form').classList.remove('active');
+  document.getElementById('search').classList.remove('active');
+}
 
 function newReport() {
-  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-  document.getElementById('form').classList.add('active');
   document.getElementById('title').textContent = 'Nuovo report';
   document.getElementById('subtitle').textContent = 'Compila i dati dell\'intervento.';
-  document.getElementById('tipo').value = '';
-  document.getElementById('cantiere').value = '';
-  document.getElementById('data').value = '';
-  document.querySelectorAll('.checkbox-list input').forEach(el => el.checked = false);
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('search').classList.remove('active');
+  document.getElementById('form').classList.add('active');
+  document.getElementById('alertBox').innerHTML = '';
+  document.getElementById('form').reset();
+  document.querySelectorAll('input[name="installatore"]').forEach(cb => cb.checked = false);
+  document.getElementById('installatoreAltro').value = '';
+  document.getElementById('altro').classList.add('hidden');
   typeChange();
 }
 
-function home() {
-  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-  document.getElementById('home').classList.add('active');
-  clearAlert();
-}
-
 function searchScreen() {
-  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('form').classList.remove('active');
   document.getElementById('search').classList.add('active');
+  document.getElementById('salert').innerHTML = '';
+  findAllReports();
 }
 
 function typeChange() {
   const tipo = document.getElementById('tipo').value;
-  document.getElementById('fv').classList.toggle('hidden', tipo !== 'Impianto Fotovoltaico');
-  document.getElementById('cl').classList.toggle('hidden', tipo !== 'Impianto Climatizzazione');
-  
+  document.getElementById('fv').classList.add('hidden');
+  document.getElementById('cl').classList.add('hidden');
+
   if (tipo === 'Impianto Fotovoltaico') {
-    loadTable('fv', FV);
+    document.getElementById('fv').classList.remove('hidden');
+    buildRows('fv');
   } else if (tipo === 'Impianto Climatizzazione') {
-    loadTable('cl', CL);
+    document.getElementById('cl').classList.remove('hidden');
+    buildRows('cl');
   }
 }
 
-function loadTable(id, data) {
-  const body = document.getElementById(id + 'body');
-  body.innerHTML = '';
-  data.forEach(item => {
+function buildRows(type) {
+  const tbody = document.getElementById(type + 'body');
+  tbody.innerHTML = '';
+
+  (works[type] || []).forEach((name) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${item[0]}</td>
-      <td class="check" data-label="Consegna"><input type="checkbox" name="${item[1]}_consegna"></td>
-      <td class="check" data-label="Concluso"><input type="checkbox" name="${item[1]}_concluso"></td>
-      <td class="note" data-label="Note"><input type="text" name="${item[1]}_note" placeholder="Note..."></td>
-    `;
-    body.appendChild(tr);
+
+    const tdName = document.createElement('td');
+    tdName.textContent = name;
+
+    const tdInCantiere = document.createElement('td');
+    tdInCantiere.className = 'check';
+    tdInCantiere.setAttribute('data-label', 'Consegna in Cantiere');
+    const chk1 = document.createElement('input');
+    chk1.type = 'checkbox';
+    chk1.name = type + '_' + name + '_cantiere';
+    tdInCantiere.appendChild(chk1);
+
+    const tdConcluso = document.createElement('td');
+    tdConcluso.className = 'check';
+    tdConcluso.setAttribute('data-label', 'Concluso');
+    const chk2 = document.createElement('input');
+    chk2.type = 'checkbox';
+    chk2.name = type + '_' + name + '_concluso';
+    tdConcluso.appendChild(chk2);
+
+    const tdNote = document.createElement('td');
+    tdNote.className = 'note';
+    tdNote.setAttribute('data-label', 'Note');
+    const textarea = document.createElement('textarea');
+    textarea.name = type + '_' + name + '_note';
+    textarea.placeholder = 'Note...';
+    textarea.rows = 3;
+    tdNote.appendChild(textarea);
+
+    tr.appendChild(tdName);
+    tr.appendChild(tdInCantiere);
+    tr.appendChild(tdConcluso);
+    tr.appendChild(tdNote);
+    tbody.appendChild(tr);
   });
+}
+
+document.addEventListener('change', function (e) {
+  if (e.target && e.target.name === 'installatore' && e.target.value === 'Altro') {
+    const altro = document.getElementById('altro');
+    if (e.target.checked) {
+      altro.classList.remove('hidden');
+      document.getElementById('installatoreAltro').focus();
+    } else {
+      altro.classList.add('hidden');
+      document.getElementById('installatoreAltro').value = '';
+    }
+  }
+});
+
+function showAlert(type, message) {
+  const box = document.getElementById('alertBox');
+  box.className = 'alert ' + type;
+  box.textContent = message;
 }
 
 function save() {
   const tipo = document.getElementById('tipo').value;
-  const cantiere = document.getElementById('cantiere').value;
+  const cantiere = document.getElementById('cantiere').value.trim();
   const data = document.getElementById('data').value;
-  
-  const installatori = Array.from(document.querySelectorAll('.checkbox-list input:checked'))
-    .map(el => el.value);
-  
-  if (!tipo || !cantiere || !data || installatori.length === 0) {
-    showAlert('Compila tutti i campi obbligatori', 'error');
+  const selectedInstallers = [...document.querySelectorAll('input[name="installatore"]:checked')].map(cb => cb.value);
+  const altro = document.getElementById('installatoreAltro').value.trim();
+
+  if (!tipo || !cantiere || !data) {
+    showAlert('error', 'Compila tutti i campi obbligatori.');
     return;
   }
-  
-  const reportData = {
-    tipo,
-    cantiere,
-    data,
-    installatori: installatori.join(', ')
-  };
-  
-  if (tipo === 'Impianto Fotovoltaico') {
-    reportData.lavorazioni = collectTableData('fv');
-  } else {
-    reportData.lavorazioni = collectTableData('cl');
-  }
-  
-  sendToAPI(reportData);
-}
 
-function collectTableData(id) {
-  const data = {};
-  document.querySelectorAll(`#${id}body tr`).forEach(tr => {
-    const cells = tr.querySelectorAll('input');
-    const lavorazione = tr.querySelector('td').textContent.trim();
-    data[lavorazione] = {
-      consegna: cells[0].checked,
-      concluso: cells[1].checked,
-      note: cells[2].value
-    };
-  });
-  return data;
-}
-function sendToAPI(data) {
-  showAlert('Salvataggio in corso...', 'success');
-  
-  fetch(API, {
-    method: 'POST',
-    mode: 'no-cors', 
-    headers: {
-      'Content-Type': 'text/plain;charset=utf-8',
-    },
-    body: JSON.stringify(data)
-  })
-  .then(() => {
-    showAlert('✅ Report salvato con successo!', 'success');
-    setTimeout(home, 2000);
-  })
-  .catch(err => {
-    console.log(err);
-    showAlert('❌ Errore di connessione: ' + err.message, 'error');
-  });
-}
-function showAlert(msg, type) {
-  const box = document.getElementById('alertBox');
-  box.innerHTML = `<div class="alert ${type}">${msg}</div>`;
-}
-
-function clearAlert() {
-  document.getElementById('alertBox').innerHTML = '';
-}
-
-function findReports() {
-  const q = document.getElementById('q').value.trim();
-  if (!q) {
-    showSearchAlert('Inserisci il nome del cantiere', 'error');
+  if (selectedInstallers.length === 0) {
+    showAlert('error', 'Seleziona almeno un installatore.');
     return;
   }
-  fetchReports({ cantiere: q });
+
+  if (selectedInstallers.includes('Altro') && !altro) {
+    showAlert('error', 'Scrivi il nome dell\'installatore alternativo.');
+    return;
+  }
+
+  showAlert('success', 'Report salvato correttamente.');
 }
 
 function findAllReports() {
-  fetchReports({});
+  document.getElementById('results').innerHTML = '<div class="empty">Nessun report trovato.</div>';
 }
 
-function fetchReports(filter) {
-  showSearchAlert('Ricerca in corso...', 'success');
-  
-  let url = API + '?action=search';
-  if (filter && filter.cantiere) {
-    url += '&cantiere=' + encodeURIComponent(filter.cantiere);
-  }
-  
-  fetch(url, {
-    method: 'GET'
-  })
-  .then(r => r.json())
-  .then(results => {
-    displayResults(results);
-  })
-  .catch(err => {
-    showSearchAlert('❌ Errore nel caricamento: ' + err.message, 'error');
-  });
-}
-function displayResults(results) {
-  const container = document.getElementById('results');
-  if (!results || results.length === 0) {
-    container.innerHTML = '<div class="empty">Nessun report trovato.</div>';
-    return;
-  }
-  
-  container.innerHTML = results.map(r => `
-    <div class="result">
-      <div>
-        <strong>${r.cantiere}</strong>
-        <span>${r.data}</span>
-        <span>${r.tipo}</span>
-      </div>
-      <button class="btn light" onclick="loadReport('${r.id}')">Modifica</button>
-    </div>
-  `).join('');
+function findReports() {
+  document.getElementById('results').innerHTML = '<div class="empty">Nessun report trovato.</div>';
 }
 
-function loadReport(id) {
-  fetch(API + '?action=get&id=' + id)
-  .then(r => r.json())
-  .then(report => {
-    document.getElementById('tipo').value = report.tipo;
-    document.getElementById('cantiere').value = report.cantiere;
-    document.getElementById('data').value = report.data;
-    
-    document.querySelectorAll('.checkbox-list input').forEach(el => {
-      el.checked = report.installatori.includes(el.value);
-    });
-    
-    typeChange();
-    
-    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-    document.getElementById('form').classList.add('active');
-    document.getElementById('title').textContent = 'Modifica report';
-    document.getElementById('subtitle').textContent = 'Aggiorna i dati dell\'intervento.';
-    document.getElementById('histbtn').classList.remove('hidden');
-  })
-  .catch(err => {
-    showSearchAlert('❌ Errore nel caricamento del report: ' + err.message, 'error');
-  });
-}
-
-function showHistory(id) {
-  const modal = document.getElementById('modal');
-  modal.classList.add('open');
-  
-  fetch(API + '?action=history&id=' + id)
-  .then(r => r.json())
-  .then(history => {
-    const body = document.getElementById('historybody');
-    if (!history || history.length === 0) {
-      body.innerHTML = '<div class="empty">Nessuna cronologia disponibile</div>';
-      return;
-    }
-    body.innerHTML = history.map((h, i) => `
-      <div class="hi ${i === 0 ? 'current' : ''}">
-        <div>
-          <strong>${h.data}</strong>
-          <span class="muted">${h.ora}</span>
-        </div>
-        <span class="version">${h.versione}</span>
-      </div>
-    `).join('');
-  })
-  .catch(err => {
-    const body = document.getElementById('historybody');
-    body.innerHTML = '<div class="empty">Errore nel caricamento della cronologia</div>';
-  });
+function showHistory() {
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('historybody').innerHTML = '<div class="empty">Nessuna cronologia disponibile.</div>';
 }
 
 function closeHistory() {
   document.getElementById('modal').classList.remove('open');
 }
-
-function showSearchAlert(msg, type) {
-  const box = document.getElementById('salert');
-  box.innerHTML = `<div class="alert ${type}">${msg}</div>`;
-}
-
 </script>
-
 </body>
 </html>
